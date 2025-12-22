@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>KUMITE MainScoreboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:radial-gradient(circle at top,#1e293b 0%,#020617 40%,#000 100%);
+  display:flex;justify-content:center;align-items:flex-start;
+  min-height:100vh;padding:20px;overflow-x:hidden;color:#111;
+}
+body::before{
+  content:"";
+  position:fixed;inset:-20%;
+  background:conic-gradient(from 140deg,#22c55e22,#0ea5e922,#eab30822,#ef444422,#3b82f622,#22c55e22);
+  mix-blend-mode:screen;
+  opacity:0.6;
+  animation:bgSweep 26s linear infinite;
+  pointer-events:none;
+}
+@keyframes bgSweep{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+.layout{
+  display:grid;
+  grid-template-columns: minmax(0,2.1fr) minmax(260px,0.9fr);
+  gap:20px;width:100%;max-width:1500px;align-items:stretch;
+}
+.scoreboard{
+  position:relative;
+  background:linear-gradient(135deg,#0b1120cc,#020617ee);
+  border-radius:24px;
+  box-shadow:
+    0 0 0 1px rgba(148,163,184,0.4),
+    0 30px 80px rgba(0,0,0,0.9);
+  padding:26px 28px 26px;
+  color:#e5e7eb;
+  backdrop-filter:blur(24px) saturate(160%);
+}
+.log-panel{
+  background:linear-gradient(145deg,#020617,#020617f0);
+  border-radius:24px;
+  box-shadow:
+    0 0 0 1px rgba(30,64,175,0.55),
+    0 24px 70px rgba(15,23,42,0.92);
+  padding:16px;max-height:85vh;display:flex;flex-direction:column;
+  color:#e5e7eb;
+}
+.log-panel h2{
+  font-size:17px;margin-bottom:8px;
+  color:#bfdbfe;letter-spacing:1px;text-transform:uppercase;
+}
+.log-container{
+  flex:1;overflow-y:auto;border:1px solid #1f2937;
+  border-radius:14px;padding:10px;background:#020617;font-size:12px;
+}
+.log-entry{margin-bottom:4px;line-height:1.3}
+.log-time{color:#6b7280;margin-right:4px}
+.log-controls{margin-top:8px;display:flex;gap:8px;justify-content:flex-end}
+.log-btn{
+  padding:4px 10px;font-size:11px;border:none;border-radius:999px;
+  background:#4b5563;color:white;cursor:pointer;
+}
+
+/* floating controls */
+.help-toggle-btn,
+.presentation-toggle-btn{
+  position:fixed;
+  background:rgba(15,23,42,0.7);
+  border:1px solid rgba(148,163,184,0.9);
+  color:#e5e7eb;
+  border-radius:999px;
+  font-size:13px;cursor:pointer;z-index:2000;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(12px);
+  transition:all 0.22s;
+}
+.help-toggle-btn{
+  top:18px;right:18px;
+  width:46px;height:46px;font-size:20px;
+}
+.help-toggle-btn:hover{background:rgba(15,23,42,0.95);transform:scale(1.06)}
+.presentation-toggle-btn{
+  top:18px;left:18px;
+  padding:0 18px;height:40px;font-size:13px;
+}
+.presentation-toggle-btn:hover{background:rgba(15,23,42,0.95);transform:translateY(-1px)}
+
+/* modal base */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(15,23,42,0.92);z-index:1999;
+  display:none;justify-content:center;align-items:center;
+  padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal-window{
+  background:#f9fafb;padding:24px;border-radius:18px;
+  max-width:520px;width:100%;max-height:90vh;overflow-y:auto;
+  box-shadow:0 26px 80px rgba(0,0,0,0.9);
+}
+
+/* help modal */
+.help-window h2{margin-bottom:6px;color:#1e3a8a}
+.help-section-title{
+  margin-top:12px;margin-bottom:4px;font-weight:700;
+  font-size:0.95rem;color:#1e3a8a;
+}
+.help-window ul{margin-left:18px;margin-top:4px}
+.help-window li{margin-bottom:4px;font-size:0.9rem}
+.help-note{
+  margin-top:10px;font-size:0.85rem;color:#4b5563;
+}
+.close-help-btn{
+  margin-top:15px;padding:8px 16px;border:none;border-radius:999px;
+  background:#1e3a8a;color:white;font-weight:bold;cursor:pointer;
+}
+
+/* refined ref modal */
+.ref-window h2{margin-bottom:10px;color:#1e3a8a}
+.ref-header{
+  font-size:11px;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  color:#6b7280;
+  margin-bottom:8px;
+}
+.ref-main-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(15,23,42,0.9);
+  color:#e5e7eb;
+  font-size:11px;
+  margin-bottom:8px;
+}
+.ref-main-chip-dot{
+  width:8px;height:8px;border-radius:999px;
+  background:#22c55e;
+  box-shadow:0 0 8px rgba(34,197,94,0.9);
+}
+.ref-main-chip-dot.paused{
+  background:#f97316;
+  box-shadow:0 0 8px rgba(249,115,22,0.9);
+}
+.ref-main-time{
+  font-family:'Courier New',Courier,monospace;
+  font-size:40px;font-weight:bold;color:#111827;
+  text-align:center;margin:6px 0 10px;
+}
+.ref-progress-wrap{
+  width:100%;
+  height:6px;
+  border-radius:999px;
+  background:#e5e7eb;
+  overflow:hidden;
+  margin-bottom:10px;
+}
+.ref-progress-bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#22c55e,#facc15,#f97316,#ef4444);
+  transition:width 0.2s ease-out;
+}
+.ref-timer-controls{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  margin-top:4px;
+}
+.ref-timer-controls button{
+  padding:5px 12px;font-size:11px;border:none;border-radius:999px;
+  cursor:pointer;font-weight:bold;color:white;
+}
+.ref-main-btn{background:#22c55e;}
+.ref-stop-btn{background:#f97316;}
+.ref-reset-btn{background:#ef4444;}
+.ref-preset-btn{background:#0ea5e9;}
+.ref-timer-note{
+  margin-top:8px;font-size:11px;color:#4b5563;text-align:center;
+}
+
+/* header */
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:16px;
+}
+.header-main{display:flex;flex-direction:column;}
+.header h1{
+  font-size:26px;color:#e5e7eb;margin-bottom:2px;
+  letter-spacing:3px;text-transform:uppercase;
+}
+.header .subtitle{
+  font-size:13px;color:#9ca3af;font-weight:500;
+}
+.header-badge{
+  padding:6px 12px;border-radius:999px;
+  border:1px solid rgba(148,163,184,0.6);
+  font-size:10px;text-transform:uppercase;
+  letter-spacing:1.3px;color:#e5e7eb;
+  background:rgba(15,23,42,0.9);
+}
+
+/* competitors */
+.competitors{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:16px;margin-bottom:16px;
+}
+.competitor{
+  text-align:center;padding:18px 16px;border-radius:18px;
+  transition:all 0.2s;border:2px solid transparent;
+  position:relative;overflow:hidden;
+}
+.competitor::before{
+  content:"";
+  position:absolute;inset:0;
+  background:radial-gradient(circle at top,#ffffff22 0%,transparent 55%);
+  opacity:0.9;mix-blend-mode:soft-light;pointer-events:none;
+}
+.competitor.aka{
+  background:linear-gradient(140deg,#b91c1c,#7f1d1d);
+  box-shadow:0 18px 46px rgba(127,29,29,0.85);
+}
+.competitor.ao{
+  background:linear-gradient(140deg,#1d4ed8,#1e3a8a);
+  box-shadow:0 18px 46px rgba(30,64,175,0.85);
+}
+.competitor-name{
+  font-size:22px;font-weight:800;margin-bottom:6px;text-transform:uppercase;
+  letter-spacing:3px;color:#f9fafb;
+}
+.score{
+  font-size:56px;font-weight:900;margin:12px 0;
+  display:flex;align-items:center;justify-content:center;gap:14px;
+}
+.senshu-btn{
+  width:56px;height:56px;border-radius:50%;
+  border:3px solid rgba(248,250,252,0.7);
+  background:rgba(15,23,42,0.35);color:white;
+  font-size:30px;font-weight:900;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.senshu-btn.active{
+  background:#facc15;border-color:#f59e0b;color:#111827;
+  box-shadow:0 0 18px rgba(250,204,21,0.95);
+}
+.score-controls{
+  display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px;
+}
+.score-btn{
+  padding:8px 12px;font-size:15px;border:none;border-radius:8px;
+  cursor:pointer;font-weight:bold;color:white;
+  background:rgba(15,23,42,0.35);transition:all 0.18s;min-width:56px;
+}
+.score-btn:hover{background:rgba(15,23,42,0.6);transform:translateY(-1px)}
+
+/* penalties */
+.penalties{margin-top:10px;font-size:15px}
+.penalty-display{
+  display:flex;gap:10px;justify-content:center;
+  margin-top:8px;align-items:center;flex-wrap:wrap;
+}
+.penalty-item{display:flex;flex-direction:column;align-items:center;gap:4px}
+.penalty-label{font-size:11px;font-weight:700;opacity:.9}
+.penalty-dot{
+  width:23px;height:23px;border-radius:50%;
+  background:rgba(15,23,42,0.4);cursor:pointer;
+  transition:all 0.18s;border:2px solid rgba(248,250,252,0.5);
+}
+.penalty-dot.active{
+  background:#fbbf24;border-color:#ffffff;
+  box-shadow:0 0 12px rgba(251,191,36,0.85);
+}
+.kiken-btn{
+  margin-top:6px;padding:5px 11px;border-radius:999px;border:none;
+  background:rgba(15,23,42,0.6);color:white;font-size:11px;
+  font-weight:700;cursor:pointer;
+}
+.kiken-btn:hover{background:rgba(15,23,42,0.9)}
+
+/* main timer */
+.timer-section{
+  text-align:center;margin-bottom:10px;
+  padding:12px;background:rgba(15,23,42,0.85);border-radius:16px;
+  border:1px solid rgba(148,163,184,0.4);
+}
+.timer{
+  font-family:'Courier New',Courier,monospace;
+  font-size:72px;font-weight:900;color:#e5e7eb;
+  cursor:pointer;border-radius:10px;
+  line-height:1;padding:6px 0;
+}
+.timer.warning{color:#f97316;animation:pulse 1s infinite}
+.timer.finished{color:#f97316}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+.timer-controls{
+  display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap;
+}
+.timer-controls button{
+  padding:6px 22px;font-size:14px;border:none;border-radius:999px;
+  cursor:pointer;font-weight:bold;transition:all 0.2s;color:white;
+}
+.start-pause-btn{background:#22c55e;min-width:120px}
+.start-pause-btn.paused{background:#facc15;color:#111827}
+.reset-btn{background:#ef4444}
+.adj-btn{background:#0ea5e9}
+
+/* bottom bar */
+.controls{
+  padding:16px 18px;background:rgba(15,23,42,0.9);border-radius:16px;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:10px;border:1px solid rgba(148,163,184,0.4);
+}
+.setting-item{display:flex;align-items:center;gap:8px}
+.setting-item label{font-weight:600;color:#e5e7eb;font-size:13px}
+.setting-item select{
+  padding:7px 10px;border:1px solid #1d4ed8;border-radius:8px;
+  background:#020617;color:#e5e7eb;font-size:13px;
+}
+.hantei-btn{
+  padding:9px 18px;border-radius:999px;border:none;
+  background:#1d4ed8;color:white;font-weight:bold;cursor:pointer;font-size:13px;
+}
+
+/* warning / winner */
+.warning-banner{
+  background:linear-gradient(135deg,#f97316 0%,#b91c1c 100%);
+  color:white;text-align:center;padding:12px;border-radius:14px;
+  margin-top:10px;font-size:20px;font-weight:800;display:none;
+  letter-spacing:3px;
+}
+.warning-banner.show{display:block}
+.winner-banner{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(15,23,42,0.96);display:none;
+  justify-content:center;align-items:center;z-index:3000;
+}
+.winner-banner.show{display:flex}
+.winner-content{
+  background:#f9fafb;padding:32px 40px;border-radius:20px;
+  text-align:center;max-width:90%;
+  box-shadow:0 32px 90px rgba(0,0,0,0.95);
+}
+.winner-name{
+  font-size:64px;font-weight:bold;margin:20px 0;
+}
+.winner-name.aka{color:#ef4444}
+.winner-name.ao{color:#3b82f6}
+.winner-name.draw{color:#6b7280}
+.winner-name.hantei{color:#1e3a8a}
+
+/* responsive */
+@media(max-width:1200px){
+  .layout{grid-template-columns:1.8fr 1fr;}
+}
+@media(max-width:1024px){
+  .layout{grid-template-columns:1fr;}
+  .log-panel{max-height:260px;}
+}
+@media(max-width:768px){
+  .competitors{grid-template-columns:1fr}
+  .timer{font-size:52px}
+  .help-toggle-btn{top:10px;right:10px;width:40px;height:40px;font-size:18px}
+  .presentation-toggle-btn{top:10px;left:10px;width:130px;height:36px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<button class="presentation-toggle-btn" onclick="openPresenter()" id="presentationBtn">
+  Open Presenter
+</button>
+
+<button class="help-toggle-btn" onclick="toggleHelp()" title="Help & Guide">?</button>
+
+<!-- Help modal -->
+<div class="modal-overlay" id="helpModal" onclick="handleHelpModalClick(event)">
+  <div class="modal-window help-window">
+    <h2>Table Official Guide</h2>
+
+    <div class="help-section-title">1. Match Flow</div>
+    <ul>
+      <li>Select bout time (1:00 to 3:00) in the Time menu.</li>
+      <li>Press <strong>Start</strong> or <strong>Spacebar</strong> on “Hajime”.</li>
+      <li>Press <strong>Start / Pause</strong> whenever the Referee calls “Yame”.</li>
+      <li>At full time the system decides: Points, Senshu, Gap, Hansoku, Kiken, Shikkaku or Hantei.</li>
+    </ul>
+
+    <div class="help-section-title">2. Scoring – Keyboard</div>
+    <ul>
+      <li><strong>A + 1 / 2 / 3</strong> – AKA +1 / +2 / +3.</li>
+      <li><strong>B + 1 / 2 / 3</strong> – AO +1 / +2 / +3.</li>
+      <li><strong>A + S</strong> – Toggle senshu for AKA.</li>
+      <li><strong>B + S</strong> – Toggle senshu for AO.</li>
+    </ul>
+
+    <div class="help-section-title">3. Penalties – Keyboard</div>
+    <ul>
+      <li><strong>A + C</strong> – AKA C1 → C2 → C3 → clear.</li>
+      <li><strong>B + C</strong> – AO C1 → C2 → C3 → clear.</li>
+      <li><strong>A + V</strong> – AKA Hansoku‑chui (HC) on/off.</li>
+      <li><strong>B + V</strong> – AO Hansoku‑chui (HC) on/off.</li>
+      <li><strong>A + H</strong> – AKA Hansoku (disqualification from match).</li>
+      <li><strong>B + H</strong> – AO Hansoku (disqualification from match).</li>
+    </ul>
+
+    <div class="help-section-title">4. Timers</div>
+    <ul>
+      <li><strong>Main</strong>: Space – Start / Pause. R – Reset (when paused). Click the timer to set seconds.</li>
+      <li><strong>Referee</strong>: Use Ref Timer button, with presets (10–180s) or a custom value.</li>
+    </ul>
+
+    <div class="help-note">
+      Event Log uses match time (MM:SS) and records only points, penalties, senshu and match results.
+      <br><br>
+      <strong>Made by Dev – JPK</strong>
+    </div>
+
+    <button class="close-help-btn" onclick="toggleHelp()">Close</button>
+  </div>
+</div>
+
+<!-- Referee timer modal -->
+<div class="modal-overlay" id="refModal" onclick="handleRefModalClick(event)">
+  <div class="modal-window ref-window">
+    <h2>Referee Countdown Timer</h2>
+    <div class="ref-header">Official timeout • Medical • Equipment</div>
+    <div class="ref-main-chip">
+      <div class="ref-main-chip-dot" id="refStatusDot"></div>
+      <span id="refStatusLabel">Ready</span>
+    </div>
+    <div id="refTimerDisplayModal" class="ref-main-time">00:10</div>
+
+    <div class="ref-progress-wrap">
+      <div class="ref-progress-bar" id="refProgressBar"></div>
+    </div>
+
+    <div class="ref-timer-controls">
+      <button class="ref-main-btn" onclick="startRefTimer()">Start</button>
+      <button class="ref-stop-btn" onclick="stopRefTimer()">Stop</button>
+      <button class="ref-reset-btn" onclick="resetRefTimer()">Reset</button>
+      <button class="ref-preset-btn" onclick="setRefPreset(10)">10s</button>
+      <button class="ref-preset-btn" onclick="setRefPreset(30)">30s</button>
+      <button class="ref-preset-btn" onclick="setRefPreset(60)">1:00</button>
+      <button class="ref-preset-btn" onclick="setRefPreset(120)">2:00</button>
+      <button class="ref-preset-btn" onclick="setRefPreset(180)">3:00</button>
+    </div>
+    <div class="ref-timer-note">
+      Set and run referee time; the audience sees this as an overlay on the presenter screen.
+    </div>
+    <div style="margin-top:8px;text-align:center;font-size:11px;color:#4b5563;">
+      Custom:&nbsp;
+      <input id="refCustomInput" type="number" min="1" max="600"
+             style="width:60px;padding:2px 4px;font-size:11px;border-radius:6px;border:1px solid #9ca3af;background:#f9fafb;">
+      <button class="ref-preset-btn" onclick="setRefCustom()">Set</button>
+    </div>
+    <button class="close-help-btn" style="margin-top:12px" onclick="toggleRefModal()">Close</button>
+  </div>
+</div>
+
+<div class="layout" id="layoutRoot">
+  <div class="scoreboard">
+    <div class="header">
+      <div class="header-main">
+        <h1>KUMITE MAIN SCOREBOARD</h1>
+        <div class="subtitle"> JPK Academy • ATKS </div>
+      </div>
+      <div class="header-badge">Scoreboard Advanced BuildV1.4</div>
+    </div>
+
+    <div class="competitors">
+      <div class="competitor ao" id="comp-ao">
+        <div class="competitor-name" id="aoName">AO</div>
+        <div class="score">
+          <div class="senshu-btn" id="aoSenshu" onclick="manualToggleSenshu('ao');logAction('AO senshu toggle','SENSHU')">S</div>
+          <div id="aoScore">0</div>
+        </div>
+        <div class="score-controls">
+          <button class="score-btn" onclick="addScore('ao',1,true)">+1</button>
+          <button class="score-btn" onclick="addScore('ao',2,true)">+2</button>
+          <button class="score-btn" onclick="addScore('ao',3,true)">+3</button>
+          <button class="score-btn" onclick="subtractScore('ao',true)">-1</button>
+        </div>
+        <div class="penalties">
+          <div class="penalty-display" id="aoPenalties">
+            <div class="penalty-item"><div class="penalty-label">C1</div><span class="penalty-dot" onclick="autoCWarning('ao')"></span></div>
+            <div class="penalty-item"><div class="penalty-label">C2</div><span class="penalty-dot"></span></div>
+            <div class="penalty-item"><div class="penalty-label">C3</div><span class="penalty-dot"></span></div>
+            <div class="penalty-item"><div class="penalty-label">HC</div><span class="penalty-dot" onclick="toggleSpecificPenalty('ao',3);logAction('AO HC toggled','PENALTY');"></span></div>
+            <div class="penalty-item"><div class="penalty-label">H</div><span class="penalty-dot" onclick="toggleHansoku('ao')"></span></div>
+          </div>
+          <button class="kiken-btn" onclick="kikenWin('aka')">AO KIKEN</button>
+          <button class="kiken-btn" onclick="shikkakuWin('aka')">AO SHIKKAKU</button>
+        </div>
+      </div>
+
+      <div class="competitor aka" id="comp-aka">
+        <div class="competitor-name" id="akaName">AKA</div>
+        <div class="score">
+          <div class="senshu-btn" id="akaSenshu" onclick="manualToggleSenshu('aka');logAction('AKA senshu toggle','SENSHU')">S</div>
+          <div id="akaScore">0</div>
+        </div>
+        <div class="score-controls">
+          <button class="score-btn" onclick="addScore('aka',1,true)">+1</button>
+          <button class="score-btn" onclick="addScore('aka',2,true)">+2</button>
+          <button class="score-btn" onclick="addScore('aka',3,true)">+3</button>
+          <button class="score-btn" onclick="subtractScore('aka',true)">-1</button>
+        </div>
+        <div class="penalties">
+          <div class="penalty-display" id="akaPenalties">
+            <div class="penalty-item"><div class="penalty-label">C1</div><span class="penalty-dot" onclick="autoCWarning('aka')"></span></div>
+            <div class="penalty-item"><div class="penalty-label">C2</div><span class="penalty-dot"></span></div>
+            <div class="penalty-item"><div class="penalty-label">C3</div><span class="penalty-dot"></span></div>
+            <div class="penalty-item"><div class="penalty-label">HC</div><span class="penalty-dot" onclick="toggleSpecificPenalty('aka',3);logAction('AKA HC toggled','PENALTY');"></span></div>
+            <div class="penalty-item"><div class="penalty-label">H</div><span class="penalty-dot" onclick="toggleHansoku('aka')"></span></div>
+          </div>
+          <button class="kiken-btn" onclick="kikenWin('ao')">AKA KIKEN</button>
+          <button class="kiken-btn" onclick="shikkakuWin('ao')">AKA SHIKKAKU</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="timer-section">
+      <div class="timer" id="timer" onclick="pauseTimer();manualEditTimer()">00:00:00</div>
+      <div class="timer-controls">
+        <button class="start-pause-btn" id="startPauseBtn" onclick="toggleTimer()">Start</button>
+        <button class="adj-btn" onclick="adjustTime(-1000)">-1s</button>
+        <button class="adj-btn" onclick="adjustTime(1000)">+1s</button>
+        <button class="reset-btn" onclick="resetTimer()">Reset</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="setting-item">
+        <label>Winning Gap:</label>
+        <select id="winning-gap" onchange="checkWinCondition()">
+          <option value="6">6</option>
+          <option value="8" selected>8</option>
+          <option value="100">Off</option>
+        </select>
+      </div>
+
+      <button onclick="resetAll()" style="padding:9px 18px;border-radius:999px;border:none;background:#4b5563;color:white;font-weight:bold;cursor:pointer;font-size:13px">
+        New Match
+      </button>
+
+      <div class="setting-item">
+        <label>Time:</label>
+        <select id="initial-time" onchange="resetTimer()">
+          <option value="60000">1:00</option>
+          <option value="90000">1:30</option>
+          <option value="120000">2:00</option>
+          <option value="150000">2:30</option>
+          <option value="180000">3:00</option>
+        </select>
+      </div>
+
+      <button class="hantei-btn" onclick="hanteiDecision()">HANTEI</button>
+      <button class="hantei-btn" style="background:#10b981" onclick="toggleRefModal()">REF TIMER</button>
+    </div>
+
+    <div class="warning-banner" id="warningBanner">FINAL 15 SECONDS</div>
+  </div>
+
+  <div class="log-panel">
+    <h2>Event Log</h2>
+    <div class="log-container" id="logContainer"></div>
+    <div class="log-controls">
+      <button class="log-btn" onclick="clearLog()">Clear Log</button>
+    </div>
+  </div>
+</div>
+
+<div class="winner-banner" id="winnerBanner">
+  <div class="winner-content">
+    <h2 id="winnerTitle">WINNER</h2>
+    <div class="winner-name" id="winnerName">AKA</div>
+    <div id="winnerScore" style="font-size:24px;color:#6b7280;margin-top:10px;"></div>
+    <button onclick="closeWinnerBanner()" style="margin-top:20px;padding:10px 30px;border:none;background:#1e3a8a;color:white;border-radius:999px;font-size:18px;cursor:pointer">
+      Close
+    </button>
+  </div>
+</div>
+
+<script>
+let scores={aka:0,ao:0};
+let senshu={aka:false,ao:false};
+let penaltyStates={aka:[false,false,false,false,false],ao:[false,false,false,false,false]};
+let remainingTimeMs=120000;
+let lastTimestamp=0;
+let animationFrameId=null;
+let isRunning=false;
+let warningShown=false;
+let audioCtx=null;
+let keysPressed={};
+let isHelpOpen=false;
+let logContainer;
+let refTimerSeconds=10;
+let refTimerInterval=null;
+let refTimerRunning=false;
+let refTimerInitial=10;
+let presenterWin=null;
+let winReason=null;
+
+const IMPORTANT_LOG={SCORE:true,PENALTY:true,SENSHU:true,RESULT:true,REF:false,SYSTEM:false};
+
+function formatMatchTime(ms){
+  let secs=Math.floor(ms/1000);
+  if(secs<0)secs=0;
+  const m=Math.floor(secs/60).toString().padStart(2,'0');
+  const s=(secs%60).toString().padStart(2,'0');
+  return m+':'+s;
+}
+
+function logAction(text,type='SYSTEM'){
+  if(!logContainer)return;
+  const upper=type.toUpperCase();
+  if(!IMPORTANT_LOG[upper])return;
+  const entry=document.createElement('div');
+  entry.className='log-entry';
+  const matchTimeStr=formatMatchTime(remainingTimeMs);
+  entry.innerHTML=`<span class="log-time">[${matchTimeStr}]</span>${text}`;
+  logContainer.appendChild(entry);
+  logContainer.scrollTop=logContainer.scrollHeight;
+}
+function clearLog(){logContainer.innerHTML='';}
+
+/* Presenter */
+function openPresenter(){
+  if(!presenterWin || presenterWin.closed){
+    presenterWin = window.open('Audiencescreen.html','kumitePresenter','width=1280,height=720');
+  }else presenterWin.focus();
+}
+window.addEventListener('message',e=>{
+  if(!e.data)return;
+  if(e.data.type==='presenter_ready')sendStateToPresenter();
+});
+function collectBannerState(){
+  const banner=document.getElementById('winnerBanner');
+  const visible=banner.classList.contains('show');
+  return {
+    visible,
+    title: visible ? document.getElementById('winnerTitle').textContent : '',
+    name: visible ? document.getElementById('winnerName').textContent : '',
+    nameClass: visible ? document.getElementById('winnerName').className : '',
+    scoreText: visible ? document.getElementById('winnerScore').textContent : '',
+    reason: visible ? winReason : null
+  };
+}
+function sendStateToPresenter(){
+  if(!presenterWin || presenterWin.closed)return;
+  presenterWin.postMessage({
+    type:'state_update',
+    scores,
+    senshu,
+    penaltyStates,
+    remainingTimeMs,
+    isRunning,
+    banner: collectBannerState(),
+    names:{
+      aka:document.getElementById('akaName').textContent,
+      ao:document.getElementById('aoName').textContent
+    },
+    refTimerSeconds,
+    refTimerRunning
+  },'*');
+}
+
+/* Help modal */
+function toggleHelp(){
+  const modal=document.getElementById('helpModal');
+  isHelpOpen=!isHelpOpen;
+  modal.classList.toggle('open',isHelpOpen);
+}
+function handleHelpModalClick(e){
+  if(e.target.id==='helpModal')toggleHelp();
+}
+
+/* Ref modal */
+function toggleRefModal(){
+  const modal=document.getElementById('refModal');
+  if(!modal)return;
+  modal.classList.toggle('open');
+}
+function handleRefModalClick(e){
+  if(e.target.id==='refModal')toggleRefModal();
+}
+
+/* Audio disabled */
+function initAudio(){} function playBuzzer(){}
+
+/* Main timer */
+function toggleTimer(){isRunning?pauseTimer():startTimer();}
+function startTimer(){
+  if(remainingTimeMs<=0)return;
+  if(!isRunning){
+    isRunning=true;
+    lastTimestamp=performance.now();
+    updateControlsUI();
+    animationFrameId=requestAnimationFrame(timerLoop);
+    sendStateToPresenter();
+  }
+}
+function pauseTimer(){
+  isRunning=false;
+  cancelAnimationFrame(animationFrameId);
+  updateControlsUI();
+  sendStateToPresenter();
+}
+function timerLoop(ts){
+  if(!isRunning)return;
+  const delta=ts-lastTimestamp;
+  lastTimestamp=ts;
+  remainingTimeMs-=delta;
+  if(remainingTimeMs<=0){
+    remainingTimeMs=0;
+    pauseTimer();
+    updateTimerDisplay();
+    document.getElementById('timer').classList.add('finished');
+    if(!winReason) winReason="POINTS";
+    showWinner();
+  }else{
+    updateTimerDisplay();
+    checkWarning();
+    animationFrameId=requestAnimationFrame(timerLoop);
+  }
+}
+function updateTimerDisplay(){
+  let ms=Math.floor((remainingTimeMs%1000)/10);
+  let secs=Math.floor((remainingTimeMs/1000)%60);
+  let mins=Math.floor(remainingTimeMs/60000);
+  document.getElementById('timer').textContent=
+    mins.toString().padStart(2,'0')+':' +
+    secs.toString().padStart(2,'0')+':' +
+    ms.toString().padStart(2,'0');
+  sendStateToPresenter();
+}
+function checkWarning(){
+  if(remainingTimeMs<=15000 && remainingTimeMs>0 && !warningShown){
+    warningShown=true;
+    document.getElementById('timer').classList.add('warning');
+    document.getElementById('warningBanner').classList.add('show');
+  }else if(remainingTimeMs>15000){
+    warningShown=false;
+    document.getElementById('timer').classList.remove('warning');
+    document.getElementById('warningBanner').classList.remove('show');
+  }
+}
+function resetTimer(){
+  pauseTimer();
+  remainingTimeMs=parseInt(document.getElementById('initial-time').value);
+  warningShown=false;
+  document.getElementById('timer').classList.remove('warning','finished');
+  document.getElementById('warningBanner').classList.remove('show');
+  updateTimerDisplay();
+}
+function adjustTime(ms){
+  remainingTimeMs+=ms;
+  if(remainingTimeMs<0)remainingTimeMs=0;
+  updateTimerDisplay();
+  checkWarning();
+}
+function manualEditTimer(){
+  let currentSecs=Math.floor(remainingTimeMs/1000);
+  let input=prompt("Enter seconds remaining:",currentSecs);
+  if(input!==null && !isNaN(input)){
+    remainingTimeMs=parseInt(input)*1000;
+    if(remainingTimeMs<0)remainingTimeMs=0;
+    updateTimerDisplay();checkWarning();
+  }
+}
+function updateControlsUI(){
+  const btn=document.getElementById('startPauseBtn');
+  if(isRunning){btn.textContent='Pause';btn.classList.add('paused');}
+  else{btn.textContent='Start';btn.classList.remove('paused');}
+}
+
+/* scoring & senshu */
+function addScore(c,points,fromUI){
+  scores[c]+=points;
+  if(scores[c]<0)scores[c]=0;
+  if(fromUI){
+    logAction(c.toUpperCase()+' '+(points>=0?'+':'')+points+
+      ' (AKA '+scores.aka+' : AO '+scores.ao+')','SCORE');
+  }
+  if(!senshu.aka && !senshu.ao && remainingTimeMs>0){
+    senshu[c]=true;
+    logAction('Senshu awarded to '+c.toUpperCase(),'SENSHU');
+  }
+  updateDisplay();
+}
+function subtractScore(c,fromUI){
+  if(scores[c]>0){
+    scores[c]--;
+    if(fromUI)logAction(c.toUpperCase()+' -1 (AKA '+scores.aka+' : AO '+scores.ao+')','SCORE');
+    updateDisplay();
+  }
+}
+function manualToggleSenshu(c){
+  senshu[c]=!senshu[c];
+  if(senshu[c]){
+    const other=c==='aka'?'ao':'aka';
+    senshu[other]=false;
+  }
+  logAction('Senshu '+(senshu[c]?'ON ':'OFF ')+'for '+c.toUpperCase(),'SENSHU');
+  updateDisplay();
+}
+
+/* penalties */
+function autoCWarning(c){
+  if(!penaltyStates[c][0]){penaltyStates[c][0]=true;logAction(c.toUpperCase()+' C1','PENALTY');}
+  else if(!penaltyStates[c][1]){penaltyStates[c][1]=true;logAction(c.toUpperCase()+' C2','PENALTY');}
+  else if(!penaltyStates[c][2]){penaltyStates[c][2]=true;logAction(c.toUpperCase()+' C3','PENALTY');}
+  else{
+    penaltyStates[c][0]=false;penaltyStates[c][1]=false;penaltyStates[c][2]=false;
+    logAction(c.toUpperCase()+' C1–C3 cleared','PENALTY');
+  }
+  updatePenaltiesUI();updateDisplay();
+}
+function toggleSpecificPenalty(c,index){
+  penaltyStates[c][index]=!penaltyStates[c][index];
+  updatePenaltiesUI();
+}
+
+/* hansoku / kiken / shikkaku */
+function toggleHansoku(c){
+  const index=4;
+  penaltyStates[c][index]=!penaltyStates[c][index];
+  updatePenaltiesUI();
+  logAction(c.toUpperCase()+' Hansoku '+(penaltyStates[c][index]?'ON':'OFF'),'PENALTY');
+  if(penaltyStates[c][index]){
+    hansokuWin(c==='aka'?'ao':'aka');
+  }
+}
+function hansokuWin(winner){
+  winReason="HANSOKU (Disqualification from match)";
+  pauseTimer();
+  logAction('Win by Hansoku for '+winner.toUpperCase(),'RESULT');
+  showWinner("HANSOKU",winner);
+}
+function kikenWin(winner){
+  if(!confirm("Confirm KIKEN (forfeit) win for "+winner.toUpperCase()+"?"))return;
+  winReason="KIKEN (Forfeit)";
+  pauseTimer();
+  logAction('Win by Kiken for '+winner.toUpperCase(),'RESULT');
+  showWinner("KIKEN",winner);
+}
+function shikkakuWin(winner){
+  if(!confirm("Confirm SHIKKAKU (disqualification from tournament) win for "+winner.toUpperCase()+"?"))return;
+  winReason="SHIKKAKU (Disqualification from tournament)";
+  pauseTimer();
+  logAction('Win by Shikkaku for '+winner.toUpperCase(),'RESULT');
+  showWinner("SHIKKAKU",winner);
+}
+
+/* UI update */
+function updatePenaltiesUI(){
+  ['aka','ao'].forEach(comp=>{
+    const container=document.getElementById(comp+'Penalties');
+    const dots=container.querySelectorAll('.penalty-dot');
+    dots.forEach((dot,i)=>{
+      dot.classList.toggle('active',penaltyStates[comp][i]);
+    });
+  });
+}
+function updateDisplay(){
+  document.getElementById('akaScore').textContent=scores.aka;
+  document.getElementById('aoScore').textContent=scores.ao;
+  document.getElementById('akaSenshu').classList.toggle('active',senshu.aka);
+  document.getElementById('aoSenshu').classList.toggle('active',senshu.ao);
+  checkWinCondition();sendStateToPresenter();
+}
+
+/* gap */
+function checkWinCondition(){
+  const gap=parseInt(document.getElementById('winning-gap').value);
+  const diff=Math.abs(scores.aka-scores.ao);
+  if(gap<100 && diff>=gap){
+    pauseTimer();
+    winReason="GAP (8‑point lead)";
+    logAction('Win by gap ('+gap+')','RESULT');
+    showWinner("GAP");
+  }
+}
+
+/* hantei */
+function hanteiDecision(){
+  pauseTimer();
+  if(scores.aka!==scores.ao || senshu.aka || senshu.ao){
+    alert("HANTEI is only for tied scores with no senshu.");
+    return;
+  }
+  const choice=prompt("HANTEI decision (AKA or AO):","AKA");
+  if(!choice)return;
+  const c=choice.trim().toLowerCase();
+  if(c!=="aka" && c!=="ao"){alert("Invalid choice. Type AKA or AO.");return;}
+  winReason="HANTEI";
+  logAction('Win by Hantei for '+c.toUpperCase(),'RESULT');
+  showWinner("HANTEI",c);
+}
+
+/* winner banner */
+function showWinner(reason=null,forcedWinner=null){
+  const banner=document.getElementById('winnerBanner');
+  const titleEl=document.getElementById('winnerTitle');
+  const nameEl=document.getElementById('winnerName');
+  const scoreEl=document.getElementById('winnerScore');
+  document.getElementById('warningBanner').classList.remove('show');
+
+  let winner=null;
+  let mode="POINTS";
+
+  if(forcedWinner){
+    winner=forcedWinner;
+    mode=reason||"HANTEI";
+  }else{
+    if(scores.aka>scores.ao){winner='aka';}
+    else if(scores.ao>scores.aka){winner='ao';}
+    else{
+      if(scores.aka===scores.ao && senshu.aka){winner='aka';mode="SENSHU";if(!winReason)winReason="SENSHU";}
+      else if(scores.aka===scores.ao && senshu.ao){winner='ao';mode="SENSHU";if(!winReason)winReason="SENSHU";}
+      else{mode="DRAW";if(!winReason)winReason="DRAW";}
+    }
+  }
+
+  if(mode==="DRAW" && !winner){
+    titleEl.textContent="MATCH RESULT";
+    nameEl.textContent="DRAW";
+    nameEl.className="winner-name draw";
+  }else{
+    if(mode==="HANTEI")titleEl.textContent="WINNER (HANTEI)";
+    else if(mode==="SENSHU")titleEl.textContent="WINNER (BY SENSHU)";
+    else if(reason==="HANSOKU")titleEl.textContent="WINNER (HANSOKU)";
+    else if(reason==="KIKEN")titleEl.textContent="WINNER (BY KIKEN)";
+    else if(reason==="SHIKKAKU")titleEl.textContent="WINNER (SHIKKAKU)";
+    else if(reason==="GAP")titleEl.textContent="WINNER (GAP)";
+    else titleEl.textContent="WINNER";
+
+    const label=winner==='aka'?'AKA':'AO';
+    nameEl.textContent=label;
+    if(mode==="HANTEI")nameEl.className="winner-name hantei";
+    else nameEl.className="winner-name "+winner;
+  }
+
+  if(!winReason){
+    if(mode==="SENSHU")winReason="SENSHU";
+    else if(mode==="DRAW")winReason="DRAW";
+    else winReason="POINTS";
+  }
+
+  scoreEl.textContent=`Score: ${scores.aka} - ${scores.ao} • ${winReason}`;
+  banner.classList.add('show');
+  sendStateToPresenter();
+}
+function closeWinnerBanner(){
+  document.getElementById('winnerBanner').classList.remove('show');
+  sendStateToPresenter();
+}
+
+/* reset match */
+function resetAll(){
+  scores={aka:0,ao:0};
+  senshu={aka:false,ao:false};
+  penaltyStates={aka:[false,false,false,false,false],ao:[false,false,false,false,false]};
+  winReason=null;
+  resetTimer();
+  updateDisplay();
+  updatePenaltiesUI();
+  document.getElementById('winnerBanner').classList.remove('show');
+  sendStateToPresenter();
+}
+
+/* refined ref timer */
+function updateRefTimerDisplay(){
+  const mins=Math.floor(refTimerSeconds/60);
+  const secs=refTimerSeconds%60;
+  const text=mins.toString().padStart(2,'0')+':'+secs.toString().padStart(2,'0');
+  const modal=document.getElementById('refTimerDisplayModal');
+  if(modal) modal.textContent=text;
+
+  const dot=document.getElementById('refStatusDot');
+  const label=document.getElementById('refStatusLabel');
+  if(refTimerRunning){
+    dot.classList.remove('paused');
+    label.textContent='Running';
+  }else if(refTimerSeconds>0 && refTimerSeconds!==refTimerInitial){
+    dot.classList.add('paused');
+    label.textContent='Paused';
+  }else if(refTimerSeconds===0){
+    dot.classList.add('paused');
+    label.textContent='Finished';
+  }else{
+    dot.classList.add('paused');
+    label.textContent='Ready';
+  }
+
+  const bar=document.getElementById('refProgressBar');
+  if(bar){
+    let pct=0;
+    if(refTimerInitial>0){
+      pct = Math.max(0,Math.min(100,(refTimerSeconds/refTimerInitial)*100));
+    }
+    bar.style.width = pct+'%';
+  }
+
+  sendStateToPresenter();
+}
+function setRefPreset(seconds){
+  refTimerInitial=seconds;
+  refTimerSeconds=seconds;
+  updateRefTimerDisplay();
+}
+function setRefCustom(){
+  const input=document.getElementById('refCustomInput');
+  const v=parseInt(input.value,10);
+  if(isNaN(v) || v<=0)return;
+  refTimerInitial=v;
+  refTimerSeconds=v;
+  updateRefTimerDisplay();
+}
+function startRefTimer(){
+  if(refTimerRunning || refTimerSeconds<=0)return;
+  refTimerRunning=true;
+  updateRefTimerDisplay();
+  refTimerInterval=setInterval(()=>{
+    refTimerSeconds--;
+    if(refTimerSeconds<=0){
+      refTimerSeconds=0;
+      clearInterval(refTimerInterval);
+      refTimerRunning=false;
+    }
+    updateRefTimerDisplay();
+  },1000);
+}
+function stopRefTimer(){
+  if(refTimerRunning){
+    clearInterval(refTimerInterval);
+    refTimerRunning=false;
+    updateRefTimerDisplay();
+  }
+}
+function resetRefTimer(){
+  clearInterval(refTimerInterval);
+  refTimerRunning=false;
+  refTimerSeconds=refTimerInitial||10;
+  updateRefTimerDisplay();
+}
+
+/* keyboard */
+function setupKeyboardListeners(){
+  document.addEventListener('keydown',e=>{
+    if(e.repeat)return;
+    const key=e.key.toLowerCase();
+
+    if(key==='escape' && isHelpOpen){toggleHelp();return;}
+    if(key===' '){e.preventDefault();}
+    keysPressed[key]=true;
+    if(isHelpOpen)return;
+
+    if(key===' '){toggleTimer();return;}
+    if(key==='r' && !isRunning){resetTimer();return;}
+
+    const isAkaHeld=keysPressed['a'];
+    const isAoHeld=keysPressed['b'];
+
+    if(isAkaHeld){
+      if(key==='1'){addScore('aka',1,false);logAction('AKA +1 (key) (AKA '+scores.aka+' : AO '+scores.ao+')','SCORE');}
+      if(key==='2'){addScore('aka',2,false);logAction('AKA +2 (key) (AKA '+scores.aka+' : AO '+scores.ao+')','SCORE');}
+      if(key==='3'){addScore('aka',3,false);logAction('AKA +3 (key) (AKA '+scores.aka+' : AO '+scores.ao+')','SCORE');}
+      if(key==='c'){autoCWarning('aka');}
+      if(key==='v'){toggleSpecificPenalty('aka',3);logAction('AKA HC toggled (key)','PENALTY');}
+      if(key==='h'){toggleHansoku('aka');}
+      if(key==='s'){manualToggleSenshu('aka');}
+    }
+    if(isAoHeld){
+      if(key==='1'){addScore('ao',1,false);logAction('AO +1 (key) (AKA '+scores.aka+' : AO '+scores.ao+')','SCORE');}
+      if(key==='2'){addScore('ao',2,false);logAction('AO +2 (key) (AKA '+scores.aka+' : AO '+scores.ao+')','SCORE');}
+      if(key==='3'){addScore('ao',3,false);logAction('AO +3 (key) (AKA '+scores.aka+' : AO '+scores.ao+')','SCORE');}
+      if(key==='c'){autoCWarning('ao');}
+      if(key==='v'){toggleSpecificPenalty('ao',3);logAction('AO HC toggled (key)','PENALTY');}
+      if(key==='h'){toggleHansoku('ao');}
+      if(key==='s'){manualToggleSenshu('ao');}
+    }
+  });
+
+  document.addEventListener('keyup',e=>{
+    const key=e.key.toLowerCase();
+    keysPressed[key]=false;
+  });
+}
+
+/* init */
+document.addEventListener('DOMContentLoaded',()=>{
+  remainingTimeMs=parseInt(document.getElementById('initial-time').value);
+  logContainer=document.getElementById('logContainer');
+  updateTimerDisplay();
+  updateRefTimerDisplay();
+  setupKeyboardListeners();
+  sendStateToPresenter();
+});
+</script>
+</body>
+</html>

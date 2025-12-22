@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>KUMITE PRESENTATION</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+html,body{
+  margin:0;padding:0;box-sizing:border-box;
+  height:100%;width:100%;
+  background:radial-gradient(circle at top,#1f2937 0%,#020617 55%,#000 100%);
+  font-family:Segoe UI,Arial,sans-serif;
+  color:white;overflow:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;inset:-20%;
+  background:conic-gradient(from 120deg,#0ea5e922,#22c55e11,#eab30822,#ef444422,#0ea5e922);
+  mix-blend-mode:screen;
+  opacity:0.5;
+  animation:bgSweep 20s linear infinite;
+  pointer-events:none;
+}
+@keyframes bgSweep{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
+.wrap{
+  display:flex;flex-direction:column;
+  height:100%;width:100%;
+  align-items:center;justify-content:center;
+  position:relative;z-index:1;
+}
+
+/* main timer */
+.timer{
+  font-family:"Courier New",monospace;
+  font-size:92px;font-weight:900;
+  letter-spacing:4px;
+  padding:14px 36px;
+  border-radius:999px;
+  color:#e5e7eb;
+  background:linear-gradient(135deg,#111827cc,#020617aa);
+  box-shadow:
+    0 0 0 2px rgba(148,163,184,0.25),
+    0 30px 80px rgba(0,0,0,0.75),
+    0 0 40px rgba(56,189,248,0.35);
+  backdrop-filter:blur(22px) saturate(160%);
+  text-shadow:0 0 18px rgba(15,23,42,0.85);
+  margin-bottom:32px;
+}
+
+/* board */
+.board{
+  display:flex;width:88%;max-width:1650px;
+  gap:28px;
+}
+.side{
+  flex:1;
+  border-radius:26px;
+  padding:26px 24px 28px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;
+  position:relative;
+  overflow:hidden;
+  box-shadow:
+    0 0 0 1px rgba(15,23,42,0.9),
+    0 30px 80px rgba(0,0,0,0.9);
+}
+.side::before{
+  content:"";
+  position:absolute;inset:0;
+  background:radial-gradient(circle at top,#ffffff26 0%,transparent 55%);
+  opacity:0.85;
+  mix-blend-mode:soft-light;
+  pointer-events:none;
+}
+.side::after{
+  content:"";
+  position:absolute;inset:-40%;
+  background:radial-gradient(circle at center,#ffffff11 0%,transparent 55%);
+  opacity:0.5;
+  mix-blend-mode:screen;
+  pointer-events:none;
+}
+.aka{
+  background:linear-gradient(135deg,#7f1d1d,#450a0a);
+  box-shadow:
+    0 0 0 1px rgba(248,113,113,0.35),
+    0 30px 80px rgba(127,29,29,0.95),
+    0 0 40px rgba(248,113,113,0.55);
+}
+.ao{
+  background:linear-gradient(135deg,#1e3a8a,#020617);
+  box-shadow:
+    0 0 0 1px rgba(96,165,250,0.35),
+    0 30px 80px rgba(15,23,42,0.95),
+    0 0 40px rgba(96,165,250,0.6);
+}
+
+/* names & scores */
+.name{
+  font-size:46px;font-weight:900;margin-bottom:8px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  text-shadow:0 0 18px rgba(0,0,0,0.75);
+}
+.score{
+  font-size:132px;font-weight:900;margin-bottom:6px;
+  letter-spacing:4px;
+  text-shadow:
+    0 0 25px rgba(15,23,42,0.9),
+    0 0 35px rgba(15,23,42,0.9);
+}
+.score::after{
+  content:"";
+  display:block;
+  width:80px;height:4px;
+  margin:10px auto 0;
+  border-radius:999px;
+  background:linear-gradient(90deg,#e5e7eb,#facc15,#e5e7eb);
+  box-shadow:0 0 18px rgba(250,204,21,0.75);
+}
+
+/* NEW senshu pill (only visible when active) */
+.senshu-pill{
+  margin:10px 0 12px;
+  padding:4px 18px;
+  border-radius:999px;
+  background:radial-gradient(circle at 30% 20%,#facc15 0%,#eab308 40%,#92400e 100%);
+  color:#111827;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  box-shadow:
+    0 0 0 2px rgba(15,23,42,0.95),
+    0 0 20px rgba(250,204,21,0.95);
+  display:none;
+}
+.senshu-pill.show{
+  display:inline-block;
+}
+
+/* penalties */
+.penalties{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  margin-top:10px;
+}
+.pen-dot-wrap{
+  display:flex;flex-direction:column;align-items:center;font-size:11px;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.pen-label{
+  margin-bottom:5px;font-weight:600;color:#e5e7ebb;
+}
+.pen-dot{
+  width:23px;height:23px;border-radius:50%;
+  border:2px solid rgba(248,250,252,0.7);
+  background:rgba(15,23,42,0.4);
+  box-shadow:0 0 0 1px rgba(15,23,42,0.9);
+  transition:all 0.16s ease-out;
+}
+.pen-dot.active{
+  background:#fb923c;
+  box-shadow:
+    0 0 0 1px rgba(15,23,42,0.95),
+    0 0 14px rgba(248,250,252,0.95);
+}
+
+/* winner overlay */
+.winner-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(circle at top,#facc1544,transparent 55%),
+             radial-gradient(circle at bottom,#0ea5e944,transparent 55%),
+             rgba(0,0,0,0.92);
+  display:none;align-items:center;justify-content:center;
+  z-index:50;
+}
+.winner-overlay.show{display:flex;}
+.winner-box{
+  background:linear-gradient(145deg,#f9fafb,#e5e7eb);
+  color:#020617;
+  padding:42px 70px;border-radius:30px;
+  text-align:center;max-width:90%;
+  box-shadow:
+    0 0 0 1px rgba(148,163,184,0.6),
+    0 40px 100px rgba(0,0,0,0.85);
+}
+.winner-title{
+  font-size:32px;font-weight:800;margin-bottom:6px;
+  letter-spacing:4px;text-transform:uppercase;
+  color:#111827;
+}
+.winner-name{
+  font-size:80px;font-weight:900;margin:16px 0 8px;
+  letter-spacing:6px;text-transform:uppercase;
+}
+.winner-name.aka{color:#b91c1c;}
+.winner-name.ao{color:#1d4ed8;}
+.winner-name.draw{color:#4b5563;}
+.winner-name.hantei{color:#1e40af;}
+.winner-score{
+  font-size:26px;color:#4b5563;
+}
+
+/* final 15 banner */
+.ato-banner{
+  position:fixed;
+  top:86%;
+  left:50%;
+  transform:translateX(-50%);
+  padding:10px 28px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#f97316 0%,#b91c1c 100%);
+  color:#fff;
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  box-shadow:0 18px 45px rgba(0,0,0,0.85);
+  display:none;
+  z-index:40;
+}
+@keyframes atoPulse{
+  0%{transform:translateX(-50%) scale(1);}
+  50%{transform:translateX(-50%) scale(1.08);}
+  100%{transform:translateX(-50%) scale(1);}
+}
+@keyframes atoShake{
+  0%,100%{transform:translateX(-50%);}
+  25%{transform:translateX(calc(-50% - 6px));}
+  50%{transform:translateX(calc(-50% + 6px));}
+  75%{transform:translateX(calc(-50% - 4px));}
+}
+.ato-banner.show{
+  display:block;
+  animation:
+    atoPulse 0.8s ease-in-out infinite,
+    atoShake 0.4s ease-in-out infinite;
+}
+
+/* ref timer overlay */
+.ref-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(15,23,42,0.85);
+  display:none;align-items:center;justify-content:center;
+  z-index:45;
+}
+.ref-overlay.show{display:flex;}
+.ref-box{
+  padding:26px 40px;
+  border-radius:24px;
+  background:linear-gradient(145deg,#020617,#0b1120);
+  box-shadow:
+    0 0 0 1px rgba(148,163,184,0.7),
+    0 32px 80px rgba(0,0,0,0.9);
+  text-align:center;
+}
+.ref-label{
+  font-size:16px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:#9ca3af;
+  margin-bottom:6px;
+}
+.ref-time{
+  font-family:"Courier New",monospace;
+  font-size:54px;
+  font-weight:900;
+  letter-spacing:4px;
+  color:#e5e7eb;
+}
+
+/* flash */
+@keyframes flashFade{
+  0%{transform:scale(1.05);}
+  100%{transform:scale(1);}
+}
+.flash{
+  animation:flashFade 0.12s ease-out;
+}
+
+/* status / branding */
+.status{
+  position:fixed;bottom:10px;left:18px;
+  font-size:12px;color:#9ca3af;
+  letter-spacing:1px;
+}
+.branding{
+  position:fixed;
+  top:50%;
+  right:22px;
+  transform:translateY(-50%);
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  font-size:18px;
+  letter-spacing:4px;
+  font-weight:800;
+  color:rgba(248,250,252,0.7);
+}
+.branding span{
+  display:inline-block;
+  padding:10px 8px;
+  background:linear-gradient(180deg,#eab308 0%,#92400e 100%);
+  border-radius:16px;
+  color:#111827;
+  box-shadow:
+    0 0 0 1px rgba(250,250,250,0.5),
+    0 18px 45px rgba(0,0,0,0.85);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="timer" id="pTimer">00:00:00</div>
+
+  <div class="board">
+    <!-- AKA -->
+    <div class="side aka">
+      <div class="name" id="pAkaName">AKA</div>
+      <div class="score" id="pAkaScore">0</div>
+
+      <!-- senshu pill -->
+      <div class="senshu-pill" id="pAkaSenshuPill">SENSHU</div>
+
+      <div class="penalties">
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Chui 1</div>
+          <div class="pen-dot" id="pAkaC1"></div>
+        </div>
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Chui 2</div>
+          <div class="pen-dot" id="pAkaC2"></div>
+        </div>
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Chui 3</div>
+          <div class="pen-dot" id="pAkaC3"></div>
+        </div>
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Hansoku‑Chui</div>
+          <div class="pen-dot" id="pAkaHC"></div>
+        </div>
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Hansoku</div>
+          <div class="pen-dot" id="pAkaH"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AO -->
+    <div class="side ao">
+      <div class="name" id="pAoName">AO</div>
+      <div class="score" id="pAoScore">0</div>
+
+      <!-- senshu pill -->
+      <div class="senshu-pill" id="pAoSenshuPill">SENSHU</div>
+
+      <div class="penalties">
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Chui 1</div>
+          <div class="pen-dot" id="pAoC1"></div>
+        </div>
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Chui 2</div>
+          <div class="pen-dot" id="pAoC2"></div>
+        </div>
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Chui 3</div>
+          <div class="pen-dot" id="pAoC3"></div>
+        </div>
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Hansoku‑Chui</div>
+          <div class="pen-dot" id="pAoHC"></div>
+        </div>
+        <div class="pen-dot-wrap">
+          <div class="pen-label">Hansoku</div>
+          <div class="pen-dot" id="pAoH"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ato-banner" id="atoBanner">Final 15 Seconds</div>
+
+<div class="branding"><span>JPK ACADEMY</span></div>
+
+<div class="winner-overlay" id="pWinnerOverlay">
+  <div class="winner-box">
+    <div class="winner-title" id="pWinnerTitle">WINNER</div>
+    <div class="winner-name" id="pWinnerName">AKA</div>
+    <div class="winner-score" id="pWinnerScore">Score: 0 - 0</div>
+  </div>
+</div>
+
+<!-- Referee timer overlay -->
+<div class="ref-overlay" id="pRefOverlay">
+  <div class="ref-box">
+    <div class="ref-label">Referee Time</div>
+    <div class="ref-time" id="pRefTime">00:10</div>
+  </div>
+</div>
+
+<div class="status" id="pStatus">Waiting for MainScoreboard…</div>
+
+<script>
+let audioCtx = null;
+let lastRemainingMs = null;
+
+/* flash helper */
+function flashElement(el){
+  if(!el) return;
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+}
+
+/* beeps */
+function beep(duration=150, frequency=1200){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.type = 'square';
+  osc.frequency.value = frequency;
+  gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration/1000);
+}
+function whistleDouble(){
+  beep(180,1400);
+  setTimeout(()=>beep(180,1400),260);
+}
+function whistleSingle(){
+  beep(160,1600);
+}
+
+/* notify main */
+if(window.opener){
+  window.opener.postMessage({type:'presenter_ready'},'*');
+}
+
+/* receive state from main */
+window.addEventListener('message',e=>{
+  const data=e.data;
+  if(!data || data.type!=='state_update') return;
+
+  const {scores,senshu,penaltyStates,remainingTimeMs,isRunning,banner,names,refTimerSeconds,refTimerRunning} = data;
+
+  /* whistles */
+  if(lastRemainingMs !== null){
+    if(lastRemainingMs > 15000 && remainingTimeMs <= 15000 && remainingTimeMs > 0){
+      whistleSingle();
+    }
+    if(lastRemainingMs > 0 && remainingTimeMs <= 0){
+      whistleDouble();
+    }
+  }
+  lastRemainingMs = remainingTimeMs;
+
+  /* final-15 banner */
+  const atoBanner=document.getElementById('atoBanner');
+  if(remainingTimeMs > 0 && remainingTimeMs <= 15000){
+    atoBanner.classList.add('show');
+  }else{
+    atoBanner.classList.remove('show');
+  }
+
+  /* main timer */
+  const timerEl=document.getElementById('pTimer');
+  const ms=Math.floor((remainingTimeMs%1000)/10);
+  const s=Math.floor((remainingTimeMs/1000)%60);
+  const m=Math.floor(remainingTimeMs/60000);
+  timerEl.textContent=
+    m.toString().padStart(2,'0')+':' +
+    s.toString().padStart(2,'0')+':' +
+    ms.toString().padStart(2,'0');
+  flashElement(timerEl);
+
+  /* names */
+  if(names){
+    const akaNameEl=document.getElementById('pAkaName');
+    const aoNameEl=document.getElementById('pAoName');
+    if(akaNameEl) akaNameEl.textContent = names.aka || 'AKA';
+    if(aoNameEl)  aoNameEl.textContent  = names.ao  || 'AO';
+  }
+
+  /* scores */
+  const akaScoreEl=document.getElementById('pAkaScore');
+  const aoScoreEl=document.getElementById('pAoScore');
+  akaScoreEl.textContent=scores.aka;
+  aoScoreEl.textContent=scores.ao;
+  flashElement(akaScoreEl);
+  flashElement(aoScoreEl);
+
+  /* NEW senshu pills */
+  const akaPill=document.getElementById('pAkaSenshuPill');
+  const aoPill =document.getElementById('pAoSenshuPill');
+  const prevAka=akaPill.classList.contains('show');
+  const prevAo =aoPill.classList.contains('show');
+
+  akaPill.classList.toggle('show',!!senshu.aka);
+  aoPill.classList.toggle('show',!!senshu.ao);
+
+  if(prevAka!==!!senshu.aka) flashElement(akaPill);
+  if(prevAo !==!!senshu.ao)  flashElement(aoPill);
+
+  /* penalties */
+  const akaP=penaltyStates.aka || [false,false,false,false,false];
+  const aoP =penaltyStates.ao  || [false,false,false,false,false];
+
+  const penIds=[
+    'pAkaC1','pAkaC2','pAkaC3','pAkaHC','pAkaH',
+    'pAoC1','pAoC2','pAoC3','pAoHC','pAoH'
+  ];
+  const penValues=[
+    akaP[0],akaP[1],akaP[2],akaP[3],akaP[4],
+    aoP[0],aoP[1],aoP[2],aoP[3],aoP[4]
+  ];
+  penIds.forEach((id,idx)=>{
+    const el=document.getElementById(id);
+    const wasActive=el.classList.contains('active');
+    el.classList.toggle('active',!!penValues[idx]);
+    if(wasActive!==!!penValues[idx]) flashElement(el);
+  });
+
+  /* winner banner */
+  const overlay=document.getElementById('pWinnerOverlay');
+  if(banner && banner.visible){
+    overlay.classList.add('show');
+    document.getElementById('pWinnerTitle').textContent=banner.title || 'WINNER';
+    const nameEl=document.getElementById('pWinnerName');
+    nameEl.textContent=banner.name || '';
+    nameEl.className=banner.nameClass || 'winner-name';
+    document.getElementById('pWinnerScore').textContent=banner.scoreText || '';
+  }else{
+    overlay.classList.remove('show');
+  }
+
+  /* REF TIMER OVERLAY: show when running or when >0 (until it hits 0) */
+  const refOverlay=document.getElementById('pRefOverlay');
+  const refTimeEl=document.getElementById('pRefTime');
+  if(typeof refTimerSeconds === 'number'){
+    const rMins=Math.floor(refTimerSeconds/60);
+    const rSecs=refTimerSeconds%60;
+    refTimeEl.textContent=
+      rMins.toString().padStart(2,'0')+':' +
+      rSecs.toString().padStart(2,'0');
+  }
+  // show ONLY while referee timer is running
+  if(refTimerRunning){
+    refOverlay.classList.add('show');
+  }else{
+    refOverlay.classList.remove('show');
+  }
+
+  document.getElementById('pStatus').textContent = isRunning
+    ? 'Live from MainScoreboard – Running'
+    : 'Live from MainScoreboard – Paused';
+});
+</script>
+</body>
+</html>
