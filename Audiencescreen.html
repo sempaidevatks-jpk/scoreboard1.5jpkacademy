@@ -13,6 +13,7 @@ html,body{
   color:white;overflow:hidden;
 }
 
+/* animated background sweep */
 body::before{
   content:"";
   position:fixed;inset:-20%;
@@ -34,29 +35,64 @@ body::before{
   position:relative;z-index:1;
 }
 
-/* main timer */
+/* main match timer */
 .timer{
-  font-family:"Courier New",monospace;
-  font-size:92px;font-weight:900;
-  letter-spacing:4px;
-  padding:14px 36px;
+  font-family:"JetBrains Mono","Courier New",monospace;
+  font-size:96px;font-weight:900;
+  letter-spacing:6px;
+  padding:16px 44px;
   border-radius:999px;
   color:#e5e7eb;
-  background:linear-gradient(135deg,#111827cc,#020617aa);
+  background:linear-gradient(135deg,#020617ee,#020617f5);
   box-shadow:
-    0 0 0 2px rgba(148,163,184,0.25),
-    0 30px 80px rgba(0,0,0,0.75),
-    0 0 40px rgba(56,189,248,0.35);
-  backdrop-filter:blur(22px) saturate(160%);
-  text-shadow:0 0 18px rgba(15,23,42,0.85);
-  margin-bottom:32px;
+    0 0 0 2px rgba(148,163,184,0.35),
+    0 32px 90px rgba(0,0,0,0.9),
+    0 0 40px rgba(56,189,248,0.4);
+  backdrop-filter:blur(24px) saturate(180%);
+  text-shadow:
+    0 0 18px rgba(15,23,42,0.9),
+    0 0 32px rgba(15,23,42,0.9);
+  margin-bottom:34px;
 }
 
-/* board */
+/* glowing while running */
+@keyframes timerGlow{
+  0%{
+    box-shadow:
+      0 0 0 2px rgba(148,163,184,0.35),
+      0 32px 90px rgba(0,0,0,0.9),
+      0 0 30px rgba(56,189,248,0.4);
+  }
+  50%{
+    box-shadow:
+      0 0 0 2px rgba(148,163,184,0.5),
+      0 36px 96px rgba(0,0,0,0.95),
+      0 0 44px rgba(56,189,248,0.6);
+  }
+  100%{
+    box-shadow:
+      0 0 0 2px rgba(148,163,184,0.35),
+      0 32px 90px rgba(0,0,0,0.9),
+      0 0 30px rgba(56,189,248,0.4);
+  }
+}
+.timer-running{
+  animation:timerGlow 3s ease-in-out infinite;
+}
+
+/* board layout */
 .board{
   display:flex;width:88%;max-width:1650px;
   gap:28px;
 }
+
+/* subtle float on panels */
+@keyframes panelFloat{
+  0%{transform:translateY(0);}
+  50%{transform:translateY(-4px);}
+  100%{transform:translateY(0);}
+}
+
 .side{
   flex:1;
   border-radius:26px;
@@ -66,8 +102,9 @@ body::before{
   position:relative;
   overflow:hidden;
   box-shadow:
-    0 0 0 1px rgba(15,23,42,0.9),
-    0 30px 80px rgba(0,0,0,0.9);
+    0 0 0 1px rgba(15,23,42,0.95),
+    0 30px 80px rgba(0,0,0,0.95);
+  animation:panelFloat 8s ease-in-out infinite;
 }
 .side::before{
   content:"";
@@ -88,16 +125,37 @@ body::before{
 .aka{
   background:linear-gradient(135deg,#7f1d1d,#450a0a);
   box-shadow:
-    0 0 0 1px rgba(248,113,113,0.35),
+    0 0 0 1px rgba(248,113,113,0.4),
     0 30px 80px rgba(127,29,29,0.95),
-    0 0 40px rgba(248,113,113,0.55);
+    0 0 40px rgba(248,113,113,0.6);
 }
 .ao{
   background:linear-gradient(135deg,#1e3a8a,#020617);
   box-shadow:
-    0 0 0 1px rgba(96,165,250,0.35),
+    0 0 0 1px rgba(96,165,250,0.4),
     0 30px 80px rgba(15,23,42,0.95),
-    0 0 40px rgba(96,165,250,0.6);
+    0 0 40px rgba(96,165,250,0.65);
+}
+
+/* corner ribbons */
+.side .corner-ribbon{
+  position:absolute;
+  top:10px;
+  left:-40px;
+  padding:4px 40px;
+  transform:rotate(-35deg);
+  font-size:11px;
+  letter-spacing:1.8px;
+  text-transform:uppercase;
+  color:#f9fafb;
+  opacity:0.9;
+  pointer-events:none;
+}
+.aka .corner-ribbon{
+  background:linear-gradient(90deg,#fecaca,#ef4444);
+}
+.ao .corner-ribbon{
+  background:linear-gradient(90deg,#bfdbfe,#3b82f6);
 }
 
 /* names & scores */
@@ -108,6 +166,7 @@ body::before{
   text-shadow:0 0 18px rgba(0,0,0,0.75);
 }
 .score{
+  position:relative;
   font-size:132px;font-weight:900;margin-bottom:6px;
   letter-spacing:4px;
   text-shadow:
@@ -124,12 +183,27 @@ body::before{
   box-shadow:0 0 18px rgba(250,204,21,0.75);
 }
 
-/* NEW senshu pill (only visible when active) */
+/* score ring when flashing */
+.score.flash::before{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  border-radius:999px;
+  border:2px solid rgba(248,250,252,0.4);
+  opacity:0;
+  animation:scoreRing 0.18s ease-out;
+}
+@keyframes scoreRing{
+  0%{transform:scale(0.9);opacity:0.6;}
+  100%{transform:scale(1.05);opacity:0;}
+}
+
+/* senshu pill */
 .senshu-pill{
   margin:10px 0 12px;
   padding:4px 18px;
   border-radius:999px;
-  background:radial-gradient(circle at 30% 20%,#facc15 0%,#eab308 40%,#92400e 100%);
+  background:radial-gradient(circle at 30% 20%,#facc15 0%,#fbbf24 40%,#92400e 100%);
   color:#111827;
   font-size:14px;
   font-weight:800;
@@ -139,9 +213,32 @@ body::before{
     0 0 0 2px rgba(15,23,42,0.95),
     0 0 20px rgba(250,204,21,0.95);
   display:none;
+  position:relative;
+  overflow:hidden;
+}
+.senshu-pill::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.5) 50%,transparent 100%);
+  transform:translateX(-120%);
+  opacity:0;
 }
 .senshu-pill.show{
   display:inline-block;
+  animation:senshuPop 0.18s ease-out;
+}
+.senshu-pill.show::after{
+  animation:senshuShine 1s ease-out 0.15s forwards;
+}
+@keyframes senshuPop{
+  0%{transform:scale(0.85);opacity:0;}
+  100%{transform:scale(1);opacity:1;}
+}
+@keyframes senshuShine{
+  0%{transform:translateX(-120%);opacity:0;}
+  10%{opacity:1;}
+  100%{transform:translateX(120%);opacity:0;}
 }
 
 /* penalties */
@@ -167,10 +264,11 @@ body::before{
   background:#fb923c;
   box-shadow:
     0 0 0 1px rgba(15,23,42,0.95),
-    0 0 14px rgba(248,250,252,0.95);
+    0 0 18px rgba(248,250,252,0.95);
+  transform:scale(1.05);
 }
 
-/* winner overlay */
+/* winner overlay + sparkle */
 .winner-overlay{
   position:fixed;top:0;left:0;right:0;bottom:0;
   background:radial-gradient(circle at top,#facc1544,transparent 55%),
@@ -188,7 +286,43 @@ body::before{
   box-shadow:
     0 0 0 1px rgba(148,163,184,0.6),
     0 40px 100px rgba(0,0,0,0.85);
+  position:relative;
+  overflow:hidden;
 }
+.winner-overlay.show .winner-box{
+  animation:winnerIn 0.22s ease-out;
+}
+@keyframes winnerIn{
+  0%{opacity:0;transform:translateY(12px) scale(0.97);}
+  100%{opacity:1;transform:translateY(0) scale(1);}
+}
+.winner-box::before,
+.winner-box::after{
+  content:"";
+  position:absolute;
+  width:140px;height:140px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(250,250,250,0.7) 0%,transparent 60%);
+  opacity:0;
+  pointer-events:none;
+}
+.winner-box::before{
+  top:-40px;left:-40px;
+}
+.winner-box::after{
+  bottom:-40px;right:-40px;
+}
+.winner-overlay.show .winner-box::before{
+  animation:winnerSparkle 0.6s ease-out forwards;
+}
+.winner-overlay.show .winner-box::after{
+  animation:winnerSparkle 0.8s ease-out 0.1s forwards;
+}
+@keyframes winnerSparkle{
+  0%{opacity:0;transform:scale(0.7);}
+  100%{opacity:0;transform:scale(1.1);}
+}
+
 .winner-title{
   font-size:32px;font-weight:800;margin-bottom:6px;
   letter-spacing:4px;text-transform:uppercase;
@@ -206,7 +340,7 @@ body::before{
   font-size:26px;color:#4b5563;
 }
 
-/* final 15 banner */
+/* final 15 banner with shimmer */
 .ato-banner{
   position:fixed;
   top:86%;
@@ -223,6 +357,7 @@ body::before{
   box-shadow:0 18px 45px rgba(0,0,0,0.85);
   display:none;
   z-index:40;
+  overflow:hidden;
 }
 @keyframes atoPulse{
   0%{transform:translateX(-50%) scale(1);}
@@ -241,40 +376,58 @@ body::before{
     atoPulse 0.8s ease-in-out infinite,
     atoShake 0.4s ease-in-out infinite;
 }
+.ato-banner::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.3) 50%,transparent 100%);
+  transform:translateX(-130%);
+}
+.ato-banner.show::after{
+  animation:atoShimmer 1.8s ease-in-out infinite;
+}
+@keyframes atoShimmer{
+  0%{transform:translateX(-130%);}
+  100%{transform:translateX(130%);}
+}
 
-/* ref timer overlay */
+/* ref timer overlay (minor glow only) */
 .ref-overlay{
   position:fixed;top:0;left:0;right:0;bottom:0;
-  background:rgba(15,23,42,0.85);
+  background:radial-gradient(circle at top,#0f172acc,transparent 65%),
+             rgba(15,23,42,0.9);
   display:none;align-items:center;justify-content:center;
   z-index:45;
 }
 .ref-overlay.show{display:flex;}
 .ref-box{
-  padding:26px 40px;
+  padding:26px 40px 20px;
   border-radius:24px;
-  background:linear-gradient(145deg,#020617,#0b1120);
+  background:rgba(15,23,42,0.88);
+  border:1px solid rgba(148,163,184,0.75);
   box-shadow:
-    0 0 0 1px rgba(148,163,184,0.7),
-    0 32px 80px rgba(0,0,0,0.9);
+    0 0 0 1px rgba(15,23,42,0.95),
+    0 32px 80px rgba(0,0,0,0.95);
   text-align:center;
+  backdrop-filter:blur(18px) saturate(180%);
 }
 .ref-label{
-  font-size:16px;
+  font-size:12px;
   letter-spacing:2px;
   text-transform:uppercase;
   color:#9ca3af;
-  margin-bottom:6px;
+  margin-bottom:4px;
 }
 .ref-time{
-  font-family:"Courier New",monospace;
-  font-size:54px;
+  margin-top:6px;
+  font-family:"JetBrains Mono","Courier New",monospace;
+  font-size:56px;
   font-weight:900;
   letter-spacing:4px;
   color:#e5e7eb;
 }
 
-/* flash */
+/* flash helper animation */
 @keyframes flashFade{
   0%{transform:scale(1.05);}
   100%{transform:scale(1);}
@@ -320,10 +473,10 @@ body::before{
   <div class="board">
     <!-- AKA -->
     <div class="side aka">
+      <div class="corner-ribbon">AKA</div>
       <div class="name" id="pAkaName">AKA</div>
       <div class="score" id="pAkaScore">0</div>
 
-      <!-- senshu pill -->
       <div class="senshu-pill" id="pAkaSenshuPill">SENSHU</div>
 
       <div class="penalties">
@@ -352,10 +505,10 @@ body::before{
 
     <!-- AO -->
     <div class="side ao">
+      <div class="corner-ribbon">AO</div>
       <div class="name" id="pAoName">AO</div>
       <div class="score" id="pAoScore">0</div>
 
-      <!-- senshu pill -->
       <div class="senshu-pill" id="pAoSenshuPill">SENSHU</div>
 
       <div class="penalties">
@@ -396,7 +549,6 @@ body::before{
   </div>
 </div>
 
-<!-- Referee timer overlay -->
 <div class="ref-overlay" id="pRefOverlay">
   <div class="ref-box">
     <div class="ref-label">Referee Time</div>
@@ -482,6 +634,7 @@ window.addEventListener('message',e=>{
     s.toString().padStart(2,'0')+':' +
     ms.toString().padStart(2,'0');
   flashElement(timerEl);
+  timerEl.classList.toggle('timer-running', !!isRunning);
 
   /* names */
   if(names){
@@ -499,7 +652,7 @@ window.addEventListener('message',e=>{
   flashElement(akaScoreEl);
   flashElement(aoScoreEl);
 
-  /* NEW senshu pills */
+  /* senshu pills */
   const akaPill=document.getElementById('pAkaSenshuPill');
   const aoPill =document.getElementById('pAoSenshuPill');
   const prevAka=akaPill.classList.contains('show');
@@ -543,7 +696,7 @@ window.addEventListener('message',e=>{
     overlay.classList.remove('show');
   }
 
-  /* REF TIMER OVERLAY: show when running or when >0 (until it hits 0) */
+  /* ref timer overlay */
   const refOverlay=document.getElementById('pRefOverlay');
   const refTimeEl=document.getElementById('pRefTime');
   if(typeof refTimerSeconds === 'number'){
@@ -553,7 +706,6 @@ window.addEventListener('message',e=>{
       rMins.toString().padStart(2,'0')+':' +
       rSecs.toString().padStart(2,'0');
   }
-  // show ONLY while referee timer is running
   if(refTimerRunning){
     refOverlay.classList.add('show');
   }else{
