@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>KUMITE PRESENTATION</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+/* Made by Dev- JPK Academy */
 <style>
 html,body{
   margin:0;padding:0;box-sizing:border-box;
@@ -198,9 +199,24 @@ body::before{
   100%{transform:scale(1.05);opacity:0;}
 }
 
+/* senshu + penalties layout */
+.senshu-penalties{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+  margin-top:10px;
+}
+.senshu-slot{
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
 /* senshu pill */
 .senshu-pill{
-  margin:10px 0 12px;
+  margin:0;
   padding:4px 18px;
   border-radius:999px;
   background:radial-gradient(circle at 30% 20%,#facc15 0%,#fbbf24 40%,#92400e 100%);
@@ -244,7 +260,7 @@ body::before{
 /* penalties */
 .penalties{
   display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
-  margin-top:10px;
+  margin-top:8px;
 }
 .pen-dot-wrap{
   display:flex;flex-direction:column;align-items:center;font-size:11px;
@@ -391,7 +407,7 @@ body::before{
   100%{transform:translateX(130%);}
 }
 
-/* ref timer overlay (minor glow only) */
+/* ref timer overlay */
 .ref-overlay{
   position:fixed;top:0;left:0;right:0;bottom:0;
   background:radial-gradient(circle at top,#0f172acc,transparent 65%),
@@ -401,10 +417,10 @@ body::before{
 }
 .ref-overlay.show{display:flex;}
 .ref-box{
-  padding:26px 40px 20px;
+  padding:26px 40px 22px;
   border-radius:24px;
-  background:rgba(15,23,42,0.88);
-  border:1px solid rgba(148,163,184,0.75);
+  background:rgba(15,23,42,0.9);
+  border:1px solid rgba(148,163,184,0.8);
   box-shadow:
     0 0 0 1px rgba(15,23,42,0.95),
     0 32px 80px rgba(0,0,0,0.95);
@@ -416,15 +432,18 @@ body::before{
   letter-spacing:2px;
   text-transform:uppercase;
   color:#9ca3af;
-  margin-bottom:4px;
+  margin-bottom:6px;
 }
 .ref-time{
-  margin-top:6px;
+  margin-top:4px;
   font-family:"JetBrains Mono","Courier New",monospace;
-  font-size:56px;
+  font-size:60px;
   font-weight:900;
   letter-spacing:4px;
   color:#e5e7eb;
+  text-shadow:
+    0 0 18px rgba(15,23,42,0.9),
+    0 0 28px rgba(15,23,42,0.9);
 }
 
 /* flash helper animation */
@@ -444,25 +463,20 @@ body::before{
 }
 .branding{
   position:fixed;
-  top:50%;
-  right:22px;
-  transform:translateY(-50%);
-  writing-mode:vertical-rl;
-  text-orientation:mixed;
-  font-size:18px;
-  letter-spacing:4px;
-  font-weight:800;
-  color:rgba(248,250,252,0.7);
+  bottom:10px;
+  right:14px;
+  font-size:12px;
+  letter-spacing:2px;
+  font-weight:600;
+  color:rgba(255,255,255,0.35);
+  z-index:10;
 }
 .branding span{
-  display:inline-block;
-  padding:10px 8px;
-  background:linear-gradient(180deg,#eab308 0%,#92400e 100%);
-  border-radius:16px;
-  color:#111827;
-  box-shadow:
-    0 0 0 1px rgba(250,250,250,0.5),
-    0 18px 45px rgba(0,0,0,0.85);
+  padding:0;
+  background:none;
+  border-radius:0;
+  box-shadow:none;
+  opacity:1;
 }
 </style>
 </head>
@@ -477,28 +491,32 @@ body::before{
       <div class="name" id="pAkaName">AKA</div>
       <div class="score" id="pAkaScore">0</div>
 
-      <div class="senshu-pill" id="pAkaSenshuPill">SENSHU</div>
+      <div class="senshu-penalties">
+        <div class="senshu-slot">
+          <div class="senshu-pill" id="pAkaSenshuPill">SENSHU</div>
+        </div>
 
-      <div class="penalties">
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Chui 1</div>
-          <div class="pen-dot" id="pAkaC1"></div>
-        </div>
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Chui 2</div>
-          <div class="pen-dot" id="pAkaC2"></div>
-        </div>
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Chui 3</div>
-          <div class="pen-dot" id="pAkaC3"></div>
-        </div>
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Hansoku‑Chui</div>
-          <div class="pen-dot" id="pAkaHC"></div>
-        </div>
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Hansoku</div>
-          <div class="pen-dot" id="pAkaH"></div>
+        <div class="penalties">
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Chui 1</div>
+            <div class="pen-dot" id="pAkaC1"></div>
+          </div>
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Chui 2</div>
+            <div class="pen-dot" id="pAkaC2"></div>
+          </div>
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Chui 3</div>
+            <div class="pen-dot" id="pAkaC3"></div>
+          </div>
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Hansoku‑Chui</div>
+            <div class="pen-dot" id="pAkaHC"></div>
+          </div>
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Hansoku</div>
+            <div class="pen-dot" id="pAkaH"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -509,28 +527,32 @@ body::before{
       <div class="name" id="pAoName">AO</div>
       <div class="score" id="pAoScore">0</div>
 
-      <div class="senshu-pill" id="pAoSenshuPill">SENSHU</div>
+      <div class="senshu-penalties">
+        <div class="senshu-slot">
+          <div class="senshu-pill" id="pAoSenshuPill">SENSHU</div>
+        </div>
 
-      <div class="penalties">
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Chui 1</div>
-          <div class="pen-dot" id="pAoC1"></div>
-        </div>
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Chui 2</div>
-          <div class="pen-dot" id="pAoC2"></div>
-        </div>
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Chui 3</div>
-          <div class="pen-dot" id="pAoC3"></div>
-        </div>
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Hansoku‑Chui</div>
-          <div class="pen-dot" id="pAoHC"></div>
-        </div>
-        <div class="pen-dot-wrap">
-          <div class="pen-label">Hansoku</div>
-          <div class="pen-dot" id="pAoH"></div>
+        <div class="penalties">
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Chui 1</div>
+            <div class="pen-dot" id="pAoC1"></div>
+          </div>
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Chui 2</div>
+            <div class="pen-dot" id="pAoC2"></div>
+          </div>
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Chui 3</div>
+            <div class="pen-dot" id="pAoC3"></div>
+          </div>
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Hansoku‑Chui</div>
+            <div class="pen-dot" id="pAoHC"></div>
+          </div>
+          <div class="pen-dot-wrap">
+            <div class="pen-label">Hansoku</div>
+            <div class="pen-dot" id="pAoH"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -603,9 +625,19 @@ window.addEventListener('message',e=>{
   const data=e.data;
   if(!data || data.type!=='state_update') return;
 
-  const {scores,senshu,penaltyStates,remainingTimeMs,isRunning,banner,names,refTimerSeconds,refTimerRunning} = data;
+  const {
+    scores,
+    senshu,
+    penaltyStates,
+    remainingTimeMs,
+    isRunning,
+    banner,
+    names,
+    refTimerSeconds,
+    refTimerRunning
+  } = data;
 
-  /* whistles */
+  /* whistles for main match */
   if(lastRemainingMs !== null){
     if(lastRemainingMs > 15000 && remainingTimeMs <= 15000 && remainingTimeMs > 0){
       whistleSingle();
@@ -696,20 +728,26 @@ window.addEventListener('message',e=>{
     overlay.classList.remove('show');
   }
 
-  /* ref timer overlay */
+  /* REF TIMER OVERLAY: stays on at 00:00 until main clears it */
   const refOverlay=document.getElementById('pRefOverlay');
   const refTimeEl=document.getElementById('pRefTime');
-  if(typeof refTimerSeconds === 'number'){
-    const rMins=Math.floor(refTimerSeconds/60);
-    const rSecs=refTimerSeconds%60;
-    refTimeEl.textContent=
-      rMins.toString().padStart(2,'0')+':' +
-      rSecs.toString().padStart(2,'0');
-  }
-  if(refTimerRunning){
+  const hasRefTimer = typeof refTimerSeconds === 'number';
+
+  if(hasRefTimer){
+    if(refTimerSeconds > 0){
+      const rMins=Math.floor(refTimerSeconds/60);
+      const rSecs=refTimerSeconds%60;
+      refTimeEl.textContent=
+        rMins.toString().padStart(2,'0')+':' +
+        rSecs.toString().padStart(2,'0');
+    }else{
+      refTimeEl.textContent='TIME OVER';
+    }
+
     refOverlay.classList.add('show');
+    refOverlay.classList.toggle('running', !!refTimerRunning);
   }else{
-    refOverlay.classList.remove('show');
+    refOverlay.classList.remove('show','running');
   }
 
   document.getElementById('pStatus').textContent = isRunning
