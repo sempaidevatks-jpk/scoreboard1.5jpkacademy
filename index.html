@@ -459,7 +459,8 @@ body::before{
              style="width:60px;padding:2px 4px;font-size:11px;border-radius:6px;border:1px solid #9ca3af;background:#f9fafb;">
       <button class="ref-preset-btn" onclick="setRefCustom()">Set</button>
     </div>
-    <button class="close-help-btn" style="margin-top:12px" onclick="toggleRefModal()">Close</button>
+    <!-- UPDATED CLOSE BUTTON -->
+    <button class="close-help-btn" style="margin-top:12px" onclick="closeRefTimerFromMain()">Close</button>
   </div>
 </div>
 
@@ -470,7 +471,7 @@ body::before{
         <h1>KUMITE MAIN SCOREBOARD</h1>
         <div class="subtitle"> JPK Academy • ATKS </div>
       </div>
-      <div class="header-badge">Scoreboard Advanced BuildV1.4</div>
+      <div class="header-badge">Scoreboard Advanced BuildV1.5</div>
     </div>
 
     <div class="competitors">
@@ -600,7 +601,7 @@ let audioCtx=null;
 let keysPressed={};
 let isHelpOpen=false;
 let logContainer;
-let refTimerSeconds=10;
+let refTimerSeconds=null;
 let refTimerInterval=null;
 let refTimerRunning=false;
 let refTimerInitial=10;
@@ -1049,6 +1050,41 @@ function resetRefTimer(){
   refTimerRunning=false;
   refTimerSeconds=refTimerInitial||10;
   updateRefTimerDisplay();
+}
+
+/* NEW: close and clear ref timer for presenter */
+function closeRefTimerFromMain(){
+  // stop any running countdown
+  clearInterval(refTimerInterval);
+  refTimerRunning = false;
+
+  // clear for presenter so overlay hides
+  refTimerSeconds = null;
+
+  // reset modal UI to neutral
+  const dot = document.getElementById('refStatusDot');
+  const label = document.getElementById('refStatusLabel');
+  const modalDisplay = document.getElementById('refTimerDisplayModal');
+  const bar = document.getElementById('refProgressBar');
+
+  if(dot){
+    dot.classList.add('paused');
+  }
+  if(label){
+    label.textContent = 'Ready';
+  }
+  if(modalDisplay){
+    modalDisplay.textContent = '00:10';
+  }
+  if(bar){
+    bar.style.width = '0%';
+  }
+
+  // close modal
+  toggleRefModal();
+
+  // push state to presenter
+  sendStateToPresenter();
 }
 
 /* keyboard */
