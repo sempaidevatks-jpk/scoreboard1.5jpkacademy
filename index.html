@@ -120,25 +120,42 @@ body::before{
   background:#1e3a8a;color:white;font-weight:bold;cursor:pointer;
 }
 
-/* refined ref modal */
-.ref-window h2{margin-bottom:10px;color:#1e3a8a}
+/* refined ref modal – main scoreboard */
+.ref-window{
+  background:radial-gradient(circle at top,#e5e7eb,#cbd5f5);
+  padding:22px 22px 20px;
+  border-radius:22px;
+  max-width:480px;
+  width:100%;
+  box-shadow:
+    0 0 0 1px rgba(148,163,184,0.55),
+    0 26px 80px rgba(15,23,42,0.95);
+}
+.ref-window h2{
+  margin-bottom:4px;
+  color:#111827;
+  font-size:18px;
+  letter-spacing:1.3px;
+  text-transform:uppercase;
+}
 .ref-header{
   font-size:11px;
   letter-spacing:1.4px;
   text-transform:uppercase;
   color:#6b7280;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
+
 .ref-main-chip{
   display:inline-flex;
   align-items:center;
   gap:8px;
-  padding:6px 12px;
+  padding:5px 12px;
   border-radius:999px;
-  background:rgba(15,23,42,0.9);
+  background:rgba(15,23,42,0.92);
   color:#e5e7eb;
   font-size:11px;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
 .ref-main-chip-dot{
   width:8px;height:8px;border-radius:999px;
@@ -149,11 +166,36 @@ body::before{
   background:#f97316;
   box-shadow:0 0 8px rgba(249,115,22,0.9);
 }
+
 .ref-main-time{
+  position:relative;
+  margin:8px auto 14px;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 20%,#ffffff 0%,#e5e7eb 40%,#cbd5f5 100%);
+  box-shadow:
+    0 16px 38px rgba(148,163,184,0.8),
+    inset 0 0 0 1px rgba(148,163,184,0.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
   font-family:'Courier New',Courier,monospace;
-  font-size:40px;font-weight:bold;color:#111827;
-  text-align:center;margin:6px 0 10px;
+  font-size:44px;
+  font-weight:900;
+  color:#111827;
+  letter-spacing:2px;
 }
+.ref-main-time::before{
+  content:"";
+  position:absolute;
+  inset:16px;
+  border-radius:50%;
+  border:1px solid rgba(148,163,184,0.5);
+  box-shadow:inset 0 0 18px rgba(148,163,184,0.6);
+  opacity:0.8;
+}
+
 .ref-progress-wrap{
   width:100%;
   height:6px;
@@ -168,20 +210,92 @@ body::before{
   background:linear-gradient(90deg,#22c55e,#facc15,#f97316,#ef4444);
   transition:width 0.2s ease-out;
 }
+
 .ref-timer-controls{
   display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
   margin-top:4px;
 }
 .ref-timer-controls button{
-  padding:5px 12px;font-size:11px;border:none;border-radius:999px;
+  padding:5px 12px;
+  font-size:11px;
+  border:none;border-radius:999px;
   cursor:pointer;font-weight:bold;color:white;
+  box-shadow:0 8px 18px rgba(15,23,42,0.4);
 }
-.ref-main-btn{background:#22c55e;}
+.ref-main-btn{background:#16a34a;}
 .ref-stop-btn{background:#f97316;}
 .ref-reset-btn{background:#ef4444;}
 .ref-preset-btn{background:#0ea5e9;}
+
 .ref-timer-note{
-  margin-top:8px;font-size:11px;color:#4b5563;text-align:center;
+  margin-top:10px;
+  font-size:11px;
+  color:#4b5563;
+  text-align:center;
+}
+
+/* futuristic custom row */
+.ref-custom-row{
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:11px;
+  color:#4b5563;
+}
+.ref-custom-label{
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  font-weight:600;
+  color:#6b7280;
+}
+.ref-custom-input-wrap{
+  position:relative;
+  padding:1px;
+  border-radius:999px;
+  background:linear-gradient(135deg,rgba(148,163,184,0.9),rgba(191,219,254,0.8));
+}
+.ref-custom-input-wrap input{
+  width:70px;
+  padding:5px 8px;
+  border-radius:999px;
+  border:none;
+  outline:none;
+  font-size:11px;
+  text-align:center;
+  background:rgba(15,23,42,0.9);
+  color:#e5e7eb;
+  box-shadow:0 0 0 1px rgba(15,23,42,0.9) inset;
+}
+.ref-custom-set{
+  padding:5px 14px;
+  border:none;
+  border-radius:999px;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:bold;
+  color:#e5f9ff;
+  background:radial-gradient(circle at 20% 0%,#e0f2fe 0%,#0ea5e9 40%,#0369a1 100%);
+  box-shadow:
+    0 0 14px rgba(56,189,248,0.85),
+    0 6px 16px rgba(15,23,42,0.7);
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  transition:transform 0.15s ease-out, box-shadow 0.15s ease-out, filter 0.15s ease-out;
+}
+.ref-custom-set:hover{
+  transform:translateY(-1px);
+  box-shadow:
+    0 0 18px rgba(56,189,248,0.95),
+    0 10px 22px rgba(15,23,42,0.9);
+  filter:brightness(1.05);
+}
+.ref-custom-set:active{
+  transform:translateY(0);
+  box-shadow:
+    0 0 10px rgba(56,189,248,0.8),
+    0 4px 12px rgba(15,23,42,0.9);
 }
 
 /* header */
@@ -450,16 +564,20 @@ body::before{
       <button class="ref-preset-btn" onclick="setRefPreset(120)">2:00</button>
       <button class="ref-preset-btn" onclick="setRefPreset(180)">3:00</button>
     </div>
+
     <div class="ref-timer-note">
       Set and run referee time; the audience sees this as an overlay on the presenter screen.
     </div>
-    <div style="margin-top:8px;text-align:center;font-size:11px;color:#4b5563;">
-      Custom:&nbsp;
-      <input id="refCustomInput" type="number" min="1" max="600"
-             style="width:60px;padding:2px 4px;font-size:11px;border-radius:6px;border:1px solid #9ca3af;background:#f9fafb;">
-      <button class="ref-preset-btn" onclick="setRefCustom()">Set</button>
+
+    <!-- NEW futuristic custom row -->
+    <div class="ref-custom-row">
+      <span class="ref-custom-label">Custom</span>
+      <div class="ref-custom-input-wrap">
+        <input id="refCustomInput" type="number" min="1" max="600" placeholder="sec">
+      </div>
+      <button class="ref-custom-set" onclick="setRefCustom()">Set</button>
     </div>
-    <!-- UPDATED CLOSE BUTTON -->
+
     <button class="close-help-btn" style="margin-top:12px" onclick="closeRefTimerFromMain()">Close</button>
   </div>
 </div>
@@ -1054,14 +1172,10 @@ function resetRefTimer(){
 
 /* NEW: close and clear ref timer for presenter */
 function closeRefTimerFromMain(){
-  // stop any running countdown
   clearInterval(refTimerInterval);
   refTimerRunning = false;
-
-  // clear for presenter so overlay hides
   refTimerSeconds = null;
 
-  // reset modal UI to neutral
   const dot = document.getElementById('refStatusDot');
   const label = document.getElementById('refStatusLabel');
   const modalDisplay = document.getElementById('refTimerDisplayModal');
@@ -1080,10 +1194,7 @@ function closeRefTimerFromMain(){
     bar.style.width = '0%';
   }
 
-  // close modal
   toggleRefModal();
-
-  // push state to presenter
   sendStateToPresenter();
 }
 
