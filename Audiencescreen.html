@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>KUMITE PRESENTATION</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-/* Made by Dev- JPK Academy */
+<!-- Made by Dev- JPK Academy -->
 <style>
 html,body{
   margin:0;padding:0;box-sizing:border-box;
@@ -32,8 +32,10 @@ body::before{
 .wrap{
   display:flex;flex-direction:column;
   height:100%;width:100%;
-  align-items:center;justify-content:center;
+  align-items:center;
+  justify-content:flex-start;
   position:relative;z-index:1;
+  padding-top:40px;
 }
 
 /* main match timer */
@@ -259,15 +261,25 @@ body::before{
 
 /* penalties */
 .penalties{
-  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
-  margin-top:8px;
+  display:flex;
+  gap:14px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:10px;
 }
 .pen-dot-wrap{
-  display:flex;flex-direction:column;align-items:center;font-size:11px;
-  text-transform:uppercase;letter-spacing:0.5px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:2px;
 }
 .pen-label{
-  margin-bottom:5px;font-weight:600;color:#e5e7ebb;
+  margin-bottom:5px;
+  font-weight:600;
+  color:#e5e7ebb;
 }
 .pen-dot{
   width:23px;height:23px;border-radius:50%;
@@ -407,43 +419,108 @@ body::before{
   100%{transform:translateX(130%);}
 }
 
-/* ref timer overlay */
+/* blur background when ref timer is active */
+#pMainWrap.blur-ref-bg{
+  filter:blur(6px);
+  transition:filter 0.18s ease-out;
+}
+
+/* ref timer overlay – perfectly centered */
 .ref-overlay{
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  background:radial-gradient(circle at top,#0f172acc,transparent 65%),
-             rgba(15,23,42,0.9);
-  display:none;align-items:center;justify-content:center;
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
   z-index:45;
 }
 .ref-overlay.show{display:flex;}
+
+/* white glass card */
 .ref-box{
-  padding:26px 40px 22px;
-  border-radius:24px;
-  background:rgba(15,23,42,0.9);
-  border:1px solid rgba(148,163,184,0.8);
+  padding:18px 26px 20px;
+  border-radius:22px;
+  background:radial-gradient(circle at center,#e5e7ebdd,#cbd5f5dd);
   box-shadow:
-    0 0 0 1px rgba(15,23,42,0.95),
-    0 32px 80px rgba(0,0,0,0.95);
+    0 0 0 1px rgba(148,163,184,0.7),
+    0 28px 80px rgba(0,0,0,0.95);
+  backdrop-filter:blur(24px) saturate(180%);
   text-align:center;
-  backdrop-filter:blur(18px) saturate(180%);
+  width:280px;
+  max-width:90vw;
+  margin:0 auto;
 }
+
+/* label + status chip */
 .ref-label{
-  font-size:12px;
+  font-size:11px;
   letter-spacing:2px;
   text-transform:uppercase;
-  color:#9ca3af;
-  margin-bottom:6px;
+  color:#6b7280;
+  margin-bottom:4px;
 }
-.ref-time{
-  margin-top:4px;
-  font-family:"JetBrains Mono","Courier New",monospace;
-  font-size:60px;
-  font-weight:900;
-  letter-spacing:4px;
+.ref-status-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:4px 10px;
+  border-radius:999px;
+  background:rgba(15,23,42,0.96);
   color:#e5e7eb;
-  text-shadow:
-    0 0 18px rgba(15,23,42,0.9),
-    0 0 28px rgba(15,23,42,0.9);
+  font-size:11px;
+}
+.ref-status-dot{
+  width:8px;height:8px;border-radius:999px;
+  background:#22c55e;
+  box-shadow:0 0 10px rgba(34,197,94,0.9);
+}
+.ref-status-dot.paused{
+  background:#f97316;
+  box-shadow:0 0 10px rgba(249,115,22,0.9);
+}
+.ref-status-dot.finished{
+  background:#ef4444;
+  box-shadow:0 0 10px rgba(239,68,68,0.9);
+}
+
+/* circular dial */
+.ref-dial{
+  position:relative;
+  margin-top:12px;
+  width:215px;
+  height:215px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 20%,#ffffff 0%,#e5e7eb 40%,#cbd5f5 100%);
+  box-shadow:
+    0 18px 46px rgba(148,163,184,0.9),
+    inset 0 0 0 1px rgba(148,163,184,0.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-left:auto;
+  margin-right:auto;
+}
+.ref-dial::before{
+  content:"";
+  position:absolute;
+  inset:18px;
+  border-radius:50%;
+  border:1px solid rgba(148,163,184,0.7);
+  box-shadow:inset 0 0 24px rgba(148,163,184,0.7);
+  opacity:0.85;
+}
+
+/* time text */
+.ref-time{
+  position:relative;
+  margin:0;
+  font-family:"JetBrains Mono","Courier New",monospace;
+  font-size:52px;
+  font-weight:900;
+  letter-spacing:3px;
+  color:#020617;
+  text-shadow:none;
 }
 
 /* flash helper animation */
@@ -481,100 +558,108 @@ body::before{
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="timer" id="pTimer">00:00:00</div>
+<div id="pMainWrap">
+  <div class="wrap">
+    <div class="timer" id="pTimer">00:00:00</div>
 
-  <div class="board">
-    <!-- AKA -->
-    <div class="side aka">
-      <div class="corner-ribbon">AKA</div>
-      <div class="name" id="pAkaName">AKA</div>
-      <div class="score" id="pAkaScore">0</div>
+    <div class="board">
+      <!-- AKA -->
+      <div class="side aka">
+        <div class="corner-ribbon">AKA</div>
+        <div class="name" id="pAkaName">AKA</div>
+        <div class="score" id="pAkaScore">0</div>
 
-      <div class="senshu-penalties">
-        <div class="senshu-slot">
-          <div class="senshu-pill" id="pAkaSenshuPill">SENSHU</div>
-        </div>
+        <div class="senshu-penalties">
+          <div class="senshu-slot">
+            <div class="senshu-pill" id="pAkaSenshuPill">SENSHU</div>
+          </div>
 
-        <div class="penalties">
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Chui 1</div>
-            <div class="pen-dot" id="pAkaC1"></div>
-          </div>
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Chui 2</div>
-            <div class="pen-dot" id="pAkaC2"></div>
-          </div>
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Chui 3</div>
-            <div class="pen-dot" id="pAkaC3"></div>
-          </div>
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Hansoku‑Chui</div>
-            <div class="pen-dot" id="pAkaHC"></div>
-          </div>
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Hansoku</div>
-            <div class="pen-dot" id="pAkaH"></div>
+          <div class="penalties">
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Chui 1</div>
+              <div class="pen-dot" id="pAkaC1"></div>
+            </div>
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Chui 2</div>
+              <div class="pen-dot" id="pAkaC2"></div>
+            </div>
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Chui 3</div>
+              <div class="pen-dot" id="pAkaC3"></div>
+            </div>
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Hansoku‑Chui</div>
+              <div class="pen-dot" id="pAkaHC"></div>
+            </div>
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Hansoku</div>
+              <div class="pen-dot" id="pAkaH"></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- AO -->
-    <div class="side ao">
-      <div class="corner-ribbon">AO</div>
-      <div class="name" id="pAoName">AO</div>
-      <div class="score" id="pAoScore">0</div>
+      <!-- AO -->
+      <div class="side ao">
+        <div class="corner-ribbon">AO</div>
+        <div class="name" id="pAoName">AO</div>
+        <div class="score" id="pAoScore">0</div>
 
-      <div class="senshu-penalties">
-        <div class="senshu-slot">
-          <div class="senshu-pill" id="pAoSenshuPill">SENSHU</div>
-        </div>
+        <div class="senshu-penalties">
+          <div class="senshu-slot">
+            <div class="senshu-pill" id="pAoSenshuPill">SENSHU</div>
+          </div>
 
-        <div class="penalties">
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Chui 1</div>
-            <div class="pen-dot" id="pAoC1"></div>
-          </div>
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Chui 2</div>
-            <div class="pen-dot" id="pAoC2"></div>
-          </div>
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Chui 3</div>
-            <div class="pen-dot" id="pAoC3"></div>
-          </div>
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Hansoku‑Chui</div>
-            <div class="pen-dot" id="pAoHC"></div>
-          </div>
-          <div class="pen-dot-wrap">
-            <div class="pen-label">Hansoku</div>
-            <div class="pen-dot" id="pAoH"></div>
+          <div class="penalties">
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Chui 1</div>
+              <div class="pen-dot" id="pAoC1"></div>
+            </div>
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Chui 2</div>
+              <div class="pen-dot" id="pAoC2"></div>
+            </div>
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Chui 3</div>
+              <div class="pen-dot" id="pAoC3"></div>
+            </div>
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Hansoku‑Chui</div>
+              <div class="pen-dot" id="pAoHC"></div>
+            </div>
+            <div class="pen-dot-wrap">
+              <div class="pen-label">Hansoku</div>
+              <div class="pen-dot" id="pAoH"></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="ato-banner" id="atoBanner">Final 15 Seconds</div>
+  <div class="ato-banner" id="atoBanner">Final 15 Seconds</div>
 
-<div class="branding"><span>JPK ACADEMY</span></div>
+  <div class="branding"><span>JPK ACADEMY</span></div>
 
-<div class="winner-overlay" id="pWinnerOverlay">
-  <div class="winner-box">
-    <div class="winner-title" id="pWinnerTitle">WINNER</div>
-    <div class="winner-name" id="pWinnerName">AKA</div>
-    <div class="winner-score" id="pWinnerScore">Score: 0 - 0</div>
+  <div class="winner-overlay" id="pWinnerOverlay">
+    <div class="winner-box">
+      <div class="winner-title" id="pWinnerTitle">WINNER</div>
+      <div class="winner-name" id="pWinnerName">AKA</div>
+      <div class="winner-score" id="pWinnerScore">Score: 0 - 0</div>
+    </div>
   </div>
 </div>
 
 <div class="ref-overlay" id="pRefOverlay">
   <div class="ref-box">
     <div class="ref-label">Referee Time</div>
-    <div class="ref-time" id="pRefTime">00:10</div>
+    <div class="ref-status-chip">
+      <span class="ref-status-dot" id="pRefDot"></span>
+      <span id="pRefStatus">Ready</span>
+    </div>
+    <div class="ref-dial">
+      <div class="ref-time" id="pRefTime">00:10</div>
+    </div>
   </div>
 </div>
 
@@ -728,26 +813,37 @@ window.addEventListener('message',e=>{
     overlay.classList.remove('show');
   }
 
-  /* REF TIMER OVERLAY: stays on at 00:00 until main clears it */
-  const refOverlay=document.getElementById('pRefOverlay');
-  const refTimeEl=document.getElementById('pRefTime');
+  /* REF TIMER OVERLAY – glass dial + background blur */
+  const refOverlay = document.getElementById('pRefOverlay');
+  const refTimeEl  = document.getElementById('pRefTime');
+  const refDot     = document.getElementById('pRefDot');
+  const refStatus  = document.getElementById('pRefStatus');
+  const mainWrap   = document.getElementById('pMainWrap');
+
   const hasRefTimer = typeof refTimerSeconds === 'number';
 
-  if(hasRefTimer){
-    if(refTimerSeconds > 0){
-      const rMins=Math.floor(refTimerSeconds/60);
-      const rSecs=refTimerSeconds%60;
-      refTimeEl.textContent=
-        rMins.toString().padStart(2,'0')+':' +
-        rSecs.toString().padStart(2,'0');
-    }else{
-      refTimeEl.textContent='TIME OVER';
-    }
-
-    refOverlay.classList.add('show');
-    refOverlay.classList.toggle('running', !!refTimerRunning);
+  if(!hasRefTimer){
+    refOverlay.classList.remove('show');
+    if(mainWrap) mainWrap.classList.remove('blur-ref-bg');
   }else{
-    refOverlay.classList.remove('show','running');
+    refOverlay.classList.add('show');
+    if(mainWrap) mainWrap.classList.add('blur-ref-bg');
+
+    const rMins = Math.floor(refTimerSeconds/60).toString().padStart(2,'0');
+    const rSecs = (refTimerSeconds%60).toString().padStart(2,'0');
+    refTimeEl.textContent = refTimerSeconds > 0 ? `${rMins}:${rSecs}` : '00:00';
+
+    refDot.classList.remove('paused','finished');
+
+    if(refTimerRunning){
+      refStatus.textContent = 'Running';
+    }else if(refTimerSeconds === 0){
+      refStatus.textContent = 'Finished';
+      refDot.classList.add('finished');
+    }else{
+      refStatus.textContent = 'Paused';
+      refDot.classList.add('paused');
+    }
   }
 
   document.getElementById('pStatus').textContent = isRunning
